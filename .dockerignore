@@ -1,0 +1,16 @@
+**/.git
+**/*.git
+.gitignore
+.DS_Store
+
+**/*.pyc
+**/__pycache__
+
+**/*.DS_Store
+**/*.edgerc
+
+Dockerfile
+README.md
+.vscode
+.dockerignore
+build.sh

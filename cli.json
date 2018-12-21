@@ -1,0 +1,12 @@
+{
+    "requirements": {
+      "python": "3.0.0"
+    },
+    "commands": [
+      {
+        "name": "cli-lds",
+        "version": "0.1.0",
+        "description": "Log Delivery Service CLI"
+      }
+    ]
+  }
