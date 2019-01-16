@@ -6,12 +6,6 @@ from jsonpath2.path import Path
 
 class Lds():
 
-    # def parseCPCodeProductsJsonPathImpl2(self, json, paths, RequireAll = True):
-        
-    #     expr = Path.parse_str(paths)
-    #     data = list(map(lambda match_data: match_data.current_value, expr.match( json )))
-    #     return data
-
     def buildParseExp(self, paths):
         
         try:
