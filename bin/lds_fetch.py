@@ -40,10 +40,10 @@ class LdsFetch():
         
 
 
-    def fetchCPCodeProducts(self, edgerc_file, section, account_key, debug=False):
+    def fetchCPCodeProducts(self, *, edgerc, section, account_key, debug=False):
 
         factory = CredentialFactory()
-        context = factory.load(edgerc_file, section, account_key)
+        context = factory.load(edgerc, section, account_key)
         
         url = self.buildUrl("https://{}/lds-api/v3/log-sources/cpcode-products/log-configurations", context)
         
@@ -57,11 +57,3 @@ class LdsFetch():
         else: 
             self.handleUnexpected(result, url, debug)
             
-        
-
-        
-
-if __name__ == '__main__':
-    
-    fetch = LdsFetch()
-    fetch.fetchCPCodeProducts(None, "p-lds", None)        

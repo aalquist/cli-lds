@@ -147,7 +147,7 @@ def list(args):
     fetch = LdsFetch()
     lds = Lds()
 
-    (_ , jsonObj) = fetch.fetchCPCodeProducts(args.edgerc, args.section, args.account_key, args.debug)  
+    (_ , jsonObj) = fetch.fetchCPCodeProducts(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
 
     parsed = lds.parseStandard(jsonObj)
     
