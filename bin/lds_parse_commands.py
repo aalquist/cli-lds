@@ -51,6 +51,8 @@ def create_sub_command( subparsers, name, help, *, optional_arguments=None, requ
     if optional_arguments:
         for arg in optional_arguments:
             name = arg["name"]
+
+            #clean up to in array check
             del arg["name"]
             if name == 'force' or name == 'show-expiration' or name == 'json' \
             or name == 'yaml' or name == 'yml' or name == 'leaf' or name == 'csv' or name == 'xlsx' \
@@ -145,7 +147,7 @@ def list(args):
     fetch = LdsFetch()
     lds = Lds()
 
-    (_ , jsonObj) = fetch.fetchCPCodeProducts(args.edgerc, args.section, None)  
+    (_ , jsonObj) = fetch.fetchCPCodeProducts(args.edgerc, args.section, args.account_key, args.debug)  
 
     parsed = lds.parseStandard(jsonObj)
     
