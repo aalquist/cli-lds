@@ -1,8 +1,13 @@
 import unittest
 import os
 import json
+import sys
+from io import StringIO
+
 from bin.lds import Lds
 from bin.lds_fetch import LdsFetch
+from bin.lds_parse_commands import main 
+
 from unittest.mock import patch
 from akamai.edgegrid import EdgeGridAuth, EdgeRc
 
@@ -15,8 +20,60 @@ class MockResponse:
     def json(self):
         return self.jsonObj
 
+
+
 class Lds_Test(unittest.TestCase):
 
+    @patch('requests.Session')
+    def testMainBootStrap(self, mockSessionObj):
+
+        response = MockResponse()
+        response.status_code = 200
+        response.jsonObj = self.getJSONFromFile( "{}/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
+
+        session = mockSessionObj()
+        session.get.return_value = response
+
+        edgeRc = "{}/tests/other/.dummy_edgerc".format(os.getcwd())
+
+        args = [ "list",
+                "--section",
+                "default",
+                 "--edgerc",
+                edgeRc,
+                "--debug"]
+
+        saved_stdout = sys.stdout
+        finaloutput = None
+
+        try:
+            out = StringIO()
+            sys.stdout = out
+            
+            main(args)
+
+            output = list(out.getvalue().split("\n"))
+            finaloutput = list(filter(lambda line: line != '', output))
+
+            line = finaloutput[0]
+            self.assertIn("200957-1", line)
+            self.assertIn("Every 24 hours", line)
+            self.assertIn("active", line)
+            self.assertIn("GZIP", line)
+            
+            line = finaloutput[1]
+            self.assertIn("104523-1", line)
+            self.assertIn("Every 1 hour", line)
+            self.assertIn("suspended", line)
+            self.assertIn("GZIP & UUENCODED", line)
+
+            self.assertEquals(2, len(finaloutput))
+            
+
+        finally:
+            sys.stdout = saved_stdout
+
+        
     
     @patch('requests.Session')
     def testFetchCPCodeProducts(self, mockSessionObj):
@@ -32,7 +89,8 @@ class Lds_Test(unittest.TestCase):
         fetch = LdsFetch()
         edgeRc = "{}/tests/other/.dummy_edgerc".format(os.getcwd())
 
-        (code, json) = fetch.fetchCPCodeProducts(edgeRc, None, None)        
+        
+        (code, json) = fetch.fetchCPCodeProducts(edgerc=edgeRc, section=None, account_key=None)        
         self.assertEqual(response.status_code, code)
         self.runGetCPCodeProducts(json)
 

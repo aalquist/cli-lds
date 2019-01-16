@@ -16,8 +16,13 @@ import argparse
 import sys
 import os
 
-from lds_fetch import LdsFetch
-from lds import Lds
+try:
+    from lds_fetch import LdsFetch
+    from lds import Lds
+except:
+    from bin.lds_fetch import LdsFetch
+    from bin.lds import Lds
+
 import json
 
 PACKAGE_VERSION = "0.0.1"
@@ -89,7 +94,7 @@ def create_sub_command( subparsers, name, help, *, optional_arguments=None, requ
 
     return action
 
-def main():
+def main(mainArgs=None):
 
     prog = get_prog_name()
     if len(sys.argv) == 1:
@@ -116,8 +121,13 @@ def main():
         subparsers, "list", "List all cpcode based log delivery configurations",
         optional_arguments=None,
         required_arguments=None)
+    
+    args = None
 
-    args = parser.parse_args()
+    if mainArgs is None: 
+        args = parser.parse_args()
+    else:
+        args = parser.parse_args(mainArgs)
 
     if len(sys.argv) <= 1:
         parser.print_help()
