@@ -4,7 +4,7 @@
     },
     "commands": [
       {
-        "name": "cli-lds",
+        "name": "lds",
         "version": "0.0.1",
         "description": "Log Delivery Service CLI"
       }
