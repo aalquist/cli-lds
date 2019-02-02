@@ -6,7 +6,7 @@
       {
         "name": "lds",
         "version": "0.0.1",
-        "description": "Log Delivery Service CLI"
+        "description": "Log Delivery Service"
       }
     ]
   }
