@@ -13,6 +13,8 @@
 # limitations under the License.
 
 import sys
+import yaml
+import os
 
 #seems to be the most reliable jsonpath parser https://github.com/pacifica/python-jsonpath2 
 from jsonpath2.path import Path
@@ -39,8 +41,22 @@ class Lds():
         data = self.parseExp(json, expr)
         return data
     
-    def parseStandard(self, json):
-        result = self.parseCPCodeProducts(json, ["$.logSource.id", "$.aggregationDetails.deliveryFrequency.value", "$.status", "$.encodingDetails.encoding.value"], True )
+    def parseFileQuery(self, queryfile):
+        with open(queryfile) as f:
+            read_data = f.read()
+            ydata = yaml.load(read_data)
+            return ydata
+        f.closed
+
+    def parseDefaultFileQuery(self):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        query_yaml = os.path.join(dir_path, "queries", "default.yaml")
+        return self.parseFileQuery(query_yaml)
+        
+    def parseDefault(self, json):
+        defaultquery = self.parseDefaultFileQuery()
+        queries = list(defaultquery.values() )
+        result = self.parseCPCodeProducts(json, queries, True )
         return result
 
     def parseCPCodeProducts(self, json, paths, RequireAll = True):

@@ -159,7 +159,7 @@ def list(args):
 
     (_ , jsonObj) = fetch.fetchCPCodeProducts(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
 
-    parsed = lds.parseStandard(jsonObj)
+    parsed = lds.parseDefault(jsonObj)
     
     for line in parsed:
         print( json.dumps(line) )

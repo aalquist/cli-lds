@@ -35,7 +35,6 @@ class MockResponse:
         return self.jsonObj
 
 
-
 class Lds_Test(unittest.TestCase):
 
     @patch('requests.Session')
@@ -81,7 +80,7 @@ class Lds_Test(unittest.TestCase):
             self.assertIn("suspended", line)
             self.assertIn("GZIP & UUENCODED", line)
 
-            self.assertEquals(2, len(finaloutput))
+            self.assertEqual(2, len(finaloutput))
             
 
         finally:
@@ -160,11 +159,6 @@ class Lds_Test(unittest.TestCase):
             if(error == True):
                 self.fail("buildandParseExpression() did not raise exception!")
 
-        
-        
-        
-
-
     def runGetCPCodeProducts(self, jsonObj):
 
         lds = Lds()
@@ -241,6 +235,26 @@ class Lds_Test(unittest.TestCase):
 
         self.assertEqual(len(result[1] ), 1)
         self.assertEqual(result[1][0], "104523-1")
+
+    def testYaml(self):
+        lds = Lds()
+
+        jsonObj = self.getJSONFromFile( "{}/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
+        result = lds.parseDefault(jsonObj)
+        
+        self.assertEqual(len(result[0] ), 4)
+        self.assertEqual(result[0][0], "200957-1")
+        self.assertEqual(result[0][1], "Every 24 hours")
+        self.assertEqual(result[0][2], "active")
+        self.assertEqual(result[0][3], "GZIP")
+
+        self.assertEqual(len(result[1] ), 4)
+        self.assertEqual(result[1][0], "104523-1")
+        self.assertEqual(result[1][1], "Every 1 hour")
+        self.assertEqual(result[1][2], "suspended")
+        self.assertEqual(result[1][3], "GZIP & UUENCODED")
+
+        
 
     def test_runGetCPCodeProducts(self):
        
