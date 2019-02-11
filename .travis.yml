@@ -3,4 +3,5 @@ language: python
 python:
   - 3.7
 script:
+  - pip install coverage
   - python runtests.py
