@@ -14,9 +14,10 @@
 # limitations under the License.
 
 import sys
-if sys.version_info[0] < 3:
+if sys.version_info[0] < 3 or (sys.version_info[0] == 3 and sys.version_info[1] < 5):
 
-    print('Python 3 is required. I am using version: ' + sys.executable)
+    print('Python 3.5 or higher is required. Executable: ' + sys.executable)
+    print('Version: ' + str(sys.version_info[0]) + '.' + str(sys.version_info[1]) )
     exit(1) 
 
 from lds_parse_commands import main 
