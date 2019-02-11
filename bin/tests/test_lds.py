@@ -249,17 +249,26 @@ class Lds_Test(unittest.TestCase):
         jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
         result = lds.parseDefault(jsonObj)
         
+        self.assertEqual(len(result ), 2)
         self.assertEqual(len(result[0] ), 4)
-        self.assertEqual(result[0][0], "200957-1")
-        self.assertEqual(result[0][1], "Every 24 hours")
-        self.assertEqual(result[0][2], "active")
-        self.assertEqual(result[0][3], "GZIP")
+
+        r1 = result[0]
+        r1.sort()
+
+        self.assertEqual(r1[0], "200957-1")
+        self.assertEqual(r1[1], "Every 24 hours")
+        self.assertEqual(r1[2], "GZIP") 
+        self.assertEqual(r1[3], "active")
 
         self.assertEqual(len(result[1] ), 4)
-        self.assertEqual(result[1][0], "104523-1")
-        self.assertEqual(result[1][1], "Every 1 hour")
-        self.assertEqual(result[1][2], "suspended")
-        self.assertEqual(result[1][3], "GZIP & UUENCODED")
+
+        r2 = result[1]
+        r2.sort()
+
+        self.assertEqual(r2[0], "104523-1")
+        self.assertEqual(r2[1], "Every 1 hour")
+        self.assertEqual(r2[2], "GZIP & UUENCODED")
+        self.assertEqual(r2[3], "suspended")
 
         
 
