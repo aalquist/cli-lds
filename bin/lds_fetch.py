@@ -22,7 +22,7 @@ import json
 try:
     from credentialfactory import CredentialFactory
     
-except ModuleNotFoundError:
+except:
     #supports unit tests
     from bin.credentialfactory import CredentialFactory
 
