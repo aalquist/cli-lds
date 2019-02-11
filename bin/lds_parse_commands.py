@@ -129,7 +129,7 @@ def main(mainArgs=None):
     else:
         args = parser.parse_args(mainArgs)
 
-    if len(sys.argv) <= 1:
+    if len(sys.argv) < 1:
         parser.print_help()
         return 0
 

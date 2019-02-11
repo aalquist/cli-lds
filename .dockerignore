@@ -3,6 +3,8 @@
 .gitignore
 .DS_Store
 
+tmp/*
+
 **/*.pyc
 **/__pycache__
 
@@ -14,3 +16,5 @@ README.md
 .vscode
 .dockerignore
 build.sh
+
+.coverage

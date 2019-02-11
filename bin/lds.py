@@ -46,7 +46,6 @@ class Lds():
             read_data = f.read()
             ydata = yaml.load(read_data)
             return ydata
-        f.closed
 
     def parseDefaultFileQuery(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))

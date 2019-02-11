@@ -18,6 +18,7 @@ import json
 import sys
 from io import StringIO
 
+
 from bin.lds import Lds
 from bin.lds_fetch import LdsFetch
 from bin.lds_parse_commands import main 
@@ -42,12 +43,12 @@ class Lds_Test(unittest.TestCase):
 
         response = MockResponse()
         response.status_code = 200
-        response.jsonObj = self.getJSONFromFile( "{}/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
+        response.jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
 
         session = mockSessionObj()
         session.get.return_value = response
 
-        edgeRc = "{}/tests/other/.dummy_edgerc".format(os.getcwd())
+        edgeRc = "{}/bin/tests/other/.dummy_edgerc".format(os.getcwd())
 
         args = [ "list",
                 "--section",
@@ -68,7 +69,12 @@ class Lds_Test(unittest.TestCase):
             output = list(out.getvalue().split("\n"))
             finaloutput = list(filter(lambda line: line != '', output))
 
+           
+
             line = finaloutput[0]
+            
+            sys.stdout = saved_stdout
+            
             self.assertIn("200957-1", line)
             self.assertIn("Every 24 hours", line)
             self.assertIn("active", line)
@@ -84,6 +90,7 @@ class Lds_Test(unittest.TestCase):
             
 
         finally:
+            pass
             sys.stdout = saved_stdout
 
         
@@ -93,14 +100,14 @@ class Lds_Test(unittest.TestCase):
 
         response = MockResponse()
         response.status_code = 200
-        response.jsonObj = self.getJSONFromFile( "{}/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
+        response.jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
 
         session = mockSessionObj()
         session.get.return_value = response
 
         #updade tests
         fetch = LdsFetch()
-        edgeRc = "{}/tests/other/.dummy_edgerc".format(os.getcwd())
+        edgeRc = "{}/bin/tests/other/.dummy_edgerc".format(os.getcwd())
 
         
         (code, json) = fetch.fetchCPCodeProducts(edgerc=edgeRc, section=None, account_key=None)        
@@ -110,7 +117,7 @@ class Lds_Test(unittest.TestCase):
     def testNewJsonPath(self):
 
         lds = Lds()
-        jsonObj = self.getJSONFromFile( "{}/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
+        jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
 
         result = lds.buildandParseExpression(jsonObj, "$[*].id")
         self.assertEqual(len(result ), 2)
@@ -239,7 +246,7 @@ class Lds_Test(unittest.TestCase):
     def testYaml(self):
         lds = Lds()
 
-        jsonObj = self.getJSONFromFile( "{}/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
+        jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
         result = lds.parseDefault(jsonObj)
         
         self.assertEqual(len(result[0] ), 4)
@@ -258,7 +265,7 @@ class Lds_Test(unittest.TestCase):
 
     def test_runGetCPCodeProducts(self):
        
-        jsonObj = self.getJSONFromFile( "{}/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
+        jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
         self.runGetCPCodeProducts(jsonObj)
         
         

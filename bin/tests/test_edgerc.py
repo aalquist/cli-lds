@@ -14,14 +14,22 @@
 
 import unittest
 import os
+import sys
 from bin.credentialfactory import CredentialFactory
+
+
 
 class EdgeRCTest(unittest.TestCase):
 
 
     def test_load(self):
         factory = CredentialFactory()
-        edgeRc = "{}/tests/other/.dummy_edgerc".format(os.getcwd())
+        #update to support current filename
+
+        
+        basedir = os.path.abspath(os.path.dirname(__file__))
+        edgeRc = "{}/other/.dummy_edgerc".format(basedir)
+        duplicateEdgeRc = "{}/other/.duplicate.dummy_edgerc".format(basedir)
 
         context = factory.load(edgeRc, "other", None)
         self.assertEqual("akab-MjIzMTE5ODM5NTQ1MGRkNTczNmIyZjk0.luna.akamaiapis.net", context.base_url )
@@ -51,6 +59,22 @@ class EdgeRCTest(unittest.TestCase):
             error = True
         
         self.assertTrue(error)
+
+        os.environ['AKAMAI_EDGERC'] = duplicateEdgeRc
+        context = factory.load(None, "duplicatesection", None)
+        self.assertEqual("akab-DjIzMTE5ODM5NTQ1MGRkNTczNmIyZjk0.luna.akamaiapis.net", context.base_url )
+
+        os.environ['AKAMAI_EDGERC'] = duplicateEdgeRc
+        os.environ['AKAMAI_EDGERC_SECTION'] = "duplicatesection"
+        
+        context = factory.load(None, None, None)
+        self.assertEqual("akab-DjIzMTE5ODM5NTQ1MGRkNTczNmIyZjk0.luna.akamaiapis.net", context.base_url )
+
+        del os.environ['AKAMAI_EDGERC']
+        del os.environ['AKAMAI_EDGERC_SECTION']
+        
+        
+
 
 if __name__ == '__main__':
     unittest.main()
