@@ -119,9 +119,15 @@ def main(mainArgs=None):
 
     actions["list"] = create_sub_command(
         subparsers, "list", "List all cpcode based log delivery configurations",
+        optional_arguments= [   {"name": "json", "help": "output api json"}, 
+                                {"name": "templatefile", "help": "override default template"}],
+        required_arguments=None)
+    #template
+    actions["template"] = create_sub_command(
+        subparsers, "template", "View default template",
         optional_arguments=None,
         required_arguments=None)
-    
+
     args = None
 
     if mainArgs is None: 
@@ -159,10 +165,25 @@ def list(args):
 
     (_ , jsonObj) = fetch.fetchCPCodeProducts(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
 
-    parsed = lds.parseDefault(jsonObj)
-    
-    for line in parsed:
-        print( json.dumps(line) )
+    if args.json == False: 
+
+        if args.templatefile:
+            parsed = lds.parseFile(jsonObj, args.templatefile)
+            for line in parsed:
+                print( json.dumps(line) )
+
+        else:
+            parsed = lds.parseDefault(jsonObj)
+            for line in parsed:
+                print( json.dumps(line) )
+                
+    else: 
+        print( jsonObj)
 
     return 0
 
+def template(args):
+    lds = Lds()
+    print( lds.parseDefaultFileQuery() )
+    return 0
+    

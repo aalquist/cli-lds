@@ -58,6 +58,12 @@ class Lds():
         result = self.parseCPCodeProducts(json, queries, True )
         return result
 
+    def parseFile(self, json, queryFileContents):
+        defaultquery = self.parseFileQuery(queryFileContents)
+        queries = list(defaultquery.values() )
+        result = self.parseCPCodeProducts(json, queries, True )
+        return result
+
     def parseCPCodeProducts(self, json, paths, RequireAll = True):
         
         returnList = []
