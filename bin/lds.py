@@ -44,7 +44,7 @@ class Lds():
     def parseFileQuery(self, queryfile):
         with open(queryfile) as f:
             read_data = f.read()
-            ydata = yaml.load(read_data)
+            ydata = yaml.load(read_data, Loader = yaml.FullLoader)
             return ydata
 
     def parseDefaultFileQuery(self):
