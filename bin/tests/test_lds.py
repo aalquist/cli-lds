@@ -50,7 +50,7 @@ class Lds_Test(unittest.TestCase):
 
         edgeRc = "{}/bin/tests/other/.dummy_edgerc".format(os.getcwd())
 
-        args = [ "list",
+        args = [ "cpcodelist",
                 "--section",
                 "default",
                  "--edgerc",

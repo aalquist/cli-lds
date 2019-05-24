@@ -115,8 +115,8 @@ def main(mainArgs=None):
         help="Show available help",
         add_help=False).add_argument( 'args', metavar="", nargs=argparse.REMAINDER)
 
-    actions["list"] = create_sub_command(
-        subparsers, "list", "List all cpcode based log delivery configurations",
+    actions["cpcodelist"] = create_sub_command(
+        subparsers, "cpcodelist", "List all cpcode based log delivery configurations",
         optional_arguments=[ 
                             {"name": "show-json", "help": "output json"},
                             {"name": "use-stdin", "help": "use stdin for yaml query"},
@@ -131,13 +131,15 @@ def main(mainArgs=None):
     args = None
 
     if mainArgs is None: 
-        args = parser.parse_args()
+        parser.print_help()
+        return 1
+
+    elif isinstance(mainArgs, list) and len(mainArgs) <= 0: 
+        parser.print_help()
+        return 1
+
     else:
         args = parser.parse_args(mainArgs)
-
-    if len(sys.argv) < 1:
-        parser.print_help()
-        return 0
 
     if args.command == "help":
 
@@ -164,7 +166,7 @@ def template(args):
     print( yaml )
     return 0
 
-def list(args):
+def cpcodelist(args):
 
     fetch = LdsFetch()
     lds = Lds()
