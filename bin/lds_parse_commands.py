@@ -170,7 +170,7 @@ def main(mainArgs=None):
 
 def template(args):
     lds = Lds()
-    yaml = lds.getDefaultYamlQuery()
+    yaml = lds.getDefaultJsonQuery()
     print( yaml )
     return 0
 
