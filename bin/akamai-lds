@@ -24,7 +24,13 @@ from lds_parse_commands import main
 
 if __name__ == '__main__':
     
-    if main() < 1:
+    args = None
+
+    if len(sys.argv) > 0 : 
+        args = sys.argv[1:]
+        print("printing args {}".format(args), file=sys.stderr)
+
+    if main(args) < 1:
         exit(0)
     else:
         exit(1)    
