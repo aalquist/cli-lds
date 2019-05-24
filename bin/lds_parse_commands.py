@@ -15,6 +15,7 @@
 import argparse
 import sys
 import os
+import json
 
 try:
     from lds_fetch import LdsFetch
@@ -171,7 +172,7 @@ def main(mainArgs=None):
 def template(args):
     lds = Lds()
     yaml = lds.getDefaultJsonQuery()
-    print( yaml )
+    print( json.dumps(yaml) )
     return 0
 
 def cpcodelist(args):
