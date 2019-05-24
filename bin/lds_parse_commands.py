@@ -134,12 +134,12 @@ def main(mainArgs=None):
 
     if mainArgs is None: 
         print("no arguments were provided", file=sys.stderr)
-        parser.print_help()
+        parser.print_help(sys.stderr)
         return 1
 
     elif isinstance(mainArgs, list) and len(mainArgs) <= 0: 
         print("no arguments were provided and empty", file=sys.stderr)
-        parser.print_help()
+        parser.print_help(sys.stderr)
         return 1
 
     else:
