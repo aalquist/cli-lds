@@ -186,14 +186,15 @@ def cpcodelist(args):
         if args.use_stdin :
             
             yaml = getArgFromSTDIN()
-            yamlObj = lds.loadYaml(yaml)
-            parsed = lds.parseYamlCommandGeneric(jsonObj , yamlObj)
+            
+            yamlObj = lds.loadJson(yaml)
+            parsed = lds.parseCommandGeneric(jsonObj , yamlObj)
 
         elif args.file is not None :
             
             yaml = getArgFromFile(args.file)
-            yamlObj = lds.loadYaml(yaml)
-            parsed = lds.parseYamlCommandGeneric(jsonObj , yamlObj)
+            yamlObj = lds.loadJson(yaml)
+            parsed = lds.parseCommandGeneric(jsonObj , yamlObj)
 
         else:
 

@@ -13,8 +13,8 @@
 # limitations under the License.
 
 import sys
-import yaml
 import os
+import json
 
 #seems to be the most reliable jsonpath parser https://github.com/pacifica/python-jsonpath2 
 from jsonpath2.path import Path
@@ -41,26 +41,26 @@ class Lds():
         data = self.parseExp(json, expr)
         return data
     
-    def loadYaml(self, read_data):
-        ydata = yaml.load(read_data, Loader = yaml.FullLoader)
-        return ydata
+    def loadJson(self, jsonStr):
+        data = json.loads(jsonStr)
+        return data
+    
+    def getJsonQueryFile(self, queryfile):
+        with open(queryfile, 'r') as myfile:
+            jsonStr = myfile.read()
+            data = self.loadJson(jsonStr)
+            return data
 
-    def getYamlQueryFile(self, queryfile):
-        with open(queryfile) as f:
-            read_data = f.read()
-            ydata = self.loadYaml(read_data)
-            return ydata
-
-    def getDefaultYamlQuery(self):
+    def getDefaultJsonQuery(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        query_yaml = os.path.join(dir_path, "queries", "default.yaml")
-        return self.getYamlQueryFile(query_yaml)
-        
+        queryjson = os.path.join(dir_path, "queries", "default.json")
+        return self.getJsonQueryFile(queryjson)
+    
     def parseDefault(self, json):
-        defaultyamlquery = self.getDefaultYamlQuery()
-        return self.parseYamlCommandGeneric(json, defaultyamlquery)
+        defaultyamlquery = self.getDefaultJsonQuery()
+        return self.parseCommandGeneric(json, defaultyamlquery)
 
-    def parseYamlCommandGeneric(self, json , yamlObj):
+    def parseCommandGeneric(self, json , yamlObj):
         queries = list(yamlObj.values() )
         result = self.parseCPCodeProducts(json, queries, True )
         return result
