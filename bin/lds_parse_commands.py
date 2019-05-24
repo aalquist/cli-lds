@@ -54,14 +54,12 @@ def create_sub_command( subparsers, name, help, *, optional_arguments=None, requ
     optional = action.add_argument_group("optional arguments")
 
     if optional_arguments:
+
         for arg in optional_arguments:
             name = arg["name"]
-
-            #clean up to in array check
             del arg["name"]
-            if name == 'force' or name == 'show-expiration' or name == 'json' \
-            or name == 'yaml' or name == 'yml' or name == 'leaf' or name == 'csv' or name == 'xlsx' \
-            or name == 'chain' or name == 'info':
+
+            if name.startswith("use-") or name.startswith("show-"):
                 optional.add_argument(
                     "--" + name,
                     required=False,
@@ -119,6 +117,14 @@ def main(mainArgs=None):
 
     actions["list"] = create_sub_command(
         subparsers, "list", "List all cpcode based log delivery configurations",
+        optional_arguments=[ 
+                            {"name": "show-json", "help": "output json"},
+                            {"name": "use-stdin", "help": "use stdin for yaml query"},
+                            {"name": "file", "help": "the yaml file as input"} ],
+        required_arguments=None)
+
+    actions["template"] = create_sub_command(
+        subparsers, "template", "prints the default yaml query template",
         optional_arguments=None,
         required_arguments=None)
     
@@ -152,6 +158,12 @@ def main(mainArgs=None):
         print(e, file=sys.stderr)
         return 1
 
+def template(args):
+    lds = Lds()
+    yaml = lds.getDefaultYamlQuery()
+    print( yaml )
+    return 0
+
 def list(args):
 
     fetch = LdsFetch()
@@ -159,10 +171,44 @@ def list(args):
 
     (_ , jsonObj) = fetch.fetchCPCodeProducts(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
 
-    parsed = lds.parseDefault(jsonObj)
+    if not args.show_json:
+
+        if args.use_stdin :
+            
+            yaml = getArgFromSTDIN()
+            yamlObj = lds.loadYaml(yaml)
+            parsed = lds.parseYamlCommandGeneric(jsonObj , yamlObj)
+
+        elif args.file is not None :
+            
+            yaml = getArgFromFile(args.file)
+            yamlObj = lds.loadYaml(yaml)
+            parsed = lds.parseYamlCommandGeneric(jsonObj , yamlObj)
+
+        else:
+
+            parsed = lds.parseDefault(jsonObj)
     
-    for line in parsed:
-        print( json.dumps(line) )
+        for line in parsed:
+            print( json.dumps(line) )
+
+    else: 
+        print( json.dumps( jsonObj, indent=1 ) )
+
 
     return 0
 
+
+def getArgFromSTDIN():
+        
+        with open(0, 'r') as myfile:
+            jsonStr = myfile.read()
+        
+        return jsonStr
+
+def getArgFromFile(jsonPath):
+        
+        with open(jsonPath, 'r') as myfile:
+            jsonStr = myfile.read()
+        
+        return jsonStr

@@ -41,20 +41,27 @@ class Lds():
         data = self.parseExp(json, expr)
         return data
     
-    def parseFileQuery(self, queryfile):
+    def loadYaml(self, read_data):
+        ydata = yaml.load(read_data, Loader = yaml.FullLoader)
+        return ydata
+
+    def getYamlQueryFile(self, queryfile):
         with open(queryfile) as f:
             read_data = f.read()
-            ydata = yaml.load(read_data, Loader = yaml.FullLoader)
+            ydata = self.loadYaml(read_data)
             return ydata
 
-    def parseDefaultFileQuery(self):
+    def getDefaultYamlQuery(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         query_yaml = os.path.join(dir_path, "queries", "default.yaml")
-        return self.parseFileQuery(query_yaml)
+        return self.getYamlQueryFile(query_yaml)
         
     def parseDefault(self, json):
-        defaultquery = self.parseDefaultFileQuery()
-        queries = list(defaultquery.values() )
+        defaultyamlquery = self.getDefaultYamlQuery()
+        return self.parseYamlCommandGeneric(json, defaultyamlquery)
+
+    def parseYamlCommandGeneric(self, json , yamlObj):
+        queries = list(yamlObj.values() )
         result = self.parseCPCodeProducts(json, queries, True )
         return result
 
