@@ -133,12 +133,12 @@ def main(mainArgs=None):
 
 
     if mainArgs is None: 
-        print("mainArgs is None", file=sys.stderr)
+        print("no arguments were provided", file=sys.stderr)
         parser.print_help()
         return 1
 
     elif isinstance(mainArgs, list) and len(mainArgs) <= 0: 
-        print("mainArgs is empty", file=sys.stderr)
+        print("no arguments were provided and empty", file=sys.stderr)
         parser.print_help()
         return 1
 
@@ -147,17 +147,14 @@ def main(mainArgs=None):
 
     if args.command == "help":
 
-        print("printing help" )
-
         if len(args.args) > 0:
             helparg = args.args[0]
             
             if helparg in actions and actions[helparg]:
-                print("printing help for: {}".format(helparg) )
                 actions[helparg].print_help()
             else:
-                print("help arg not found: {}".format(helparg), file=sys.stderr)
                 parser.print_help(sys.stderr)
+                return 1
         else:
             parser.prog = get_prog_name() + " help [command]"
             parser.print_help()
