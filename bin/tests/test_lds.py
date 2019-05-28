@@ -55,7 +55,10 @@ class Lds_Test(unittest.TestCase):
                 "default",
                  "--edgerc",
                 edgeRc,
-                "--debug"]
+                "--debug",
+                "--template",
+                "default.json"
+                ]
 
         saved_stdout = sys.stdout
         finaloutput = None
@@ -64,13 +67,13 @@ class Lds_Test(unittest.TestCase):
             out = StringIO()
             sys.stdout = out
             
-            main(args)
+            self.assertEqual(main(args), 0, "command args {} should return successcode".format(args) )
 
             output = list(out.getvalue().split("\n"))
             finaloutput = list(filter(lambda line: line != '', output))
 
            
-
+            self.assertGreater(len(finaloutput), 0, "command args {} and its output should be greater than zero".format(args) )
             line = finaloutput[0]
             
             sys.stdout = saved_stdout

@@ -51,6 +51,27 @@ class QueryResult():
             data = self.loadJson(jsonStr)
             return data
 
+    def listQuery(self):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        ldsdir = os.path.join(dir_path, "queries", "lds")
+        listdir = os.listdir(ldsdir)
+
+        returnlist = []
+
+        for f in listdir:
+            fullname = os.path.join(dir_path, "queries", "lds", f)
+
+            if os.path.isfile(fullname):
+                returnlist.append(f)
+            
+
+        return returnlist
+
+    def getNonDefaultQuery(self, name):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        queryjson = os.path.join(dir_path, "queries", "lds", name )
+        return self.getJsonQueryFile(queryjson)
+
     def getDefaultJsonQuery(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         queryjson = os.path.join(dir_path, "queries", "lds", "default.json")
