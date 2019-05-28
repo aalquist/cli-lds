@@ -60,7 +60,7 @@ def create_sub_command( subparsers, name, help, *, optional_arguments=None, requ
             name = arg["name"]
             del arg["name"]
 
-            if name.startswith("use-") or name.startswith("show-"):
+            if name.startswith("use-") or name.startswith("show-") or name.startswith("for-"):
                 optional.add_argument(
                     "--" + name,
                     required=False,
@@ -126,7 +126,9 @@ def main(mainArgs=None):
 
     actions["template"] = create_sub_command(
         subparsers, "template", "prints the default yaml query template",
-        optional_arguments=None,
+        optional_arguments=[    
+                                {"name": "show-list", "help": "get templates names"},
+                                {"name": "get", "help": "get template by name"}],
         required_arguments=None)
     
     args = None
@@ -171,8 +173,21 @@ def main(mainArgs=None):
 
 def template(args):
     lds = Lds()
-    yaml = lds.getDefaultJsonQuery()
-    print( json.dumps(yaml) )
+
+    if args.get is None:
+        obj = lds.listQuery()
+    else:
+
+        validNames = lds.listQuery()
+
+        if args.get in validNames:
+            obj = lds.getNonDefaultQuery(args.get)
+        else: 
+            obj = validNames
+        
+        
+
+    print( json.dumps(obj) )
     return 0
 
 def cpcodelist(args):
