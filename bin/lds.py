@@ -20,7 +20,7 @@ import json
 from jsonpath2.path import Path
 
 
-class Lds():
+class QueryResult():
 
     def buildParseExp(self, paths):
         
@@ -56,16 +56,16 @@ class Lds():
         queryjson = os.path.join(dir_path, "queries", "default.json")
         return self.getJsonQueryFile(queryjson)
     
-    def parseDefault(self, json):
+    def parseCommandDefault(self, json):
         defaultyamlquery = self.getDefaultJsonQuery()
         return self.parseCommandGeneric(json, defaultyamlquery)
 
-    def parseCommandGeneric(self, json , yamlObj):
-        queries = list(yamlObj.values() )
-        result = self.parseCPCodeProducts(json, queries, True )
+    def parseCommandGeneric(self, json , dictObj):
+        queries = list(dictObj.values() )
+        result = self.parseElement(json, queries, True )
         return result
 
-    def parseCPCodeProducts(self, json, paths, RequireAll = True):
+    def parseElement(self, json, paths, RequireAll = True):
         
         returnList = []
 

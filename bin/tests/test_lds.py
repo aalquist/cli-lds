@@ -19,7 +19,7 @@ import sys
 from io import StringIO
 
 
-from bin.lds import Lds
+from bin.lds import QueryResult
 from bin.lds_fetch import LdsFetch
 from bin.lds_parse_commands import main 
 
@@ -112,11 +112,11 @@ class Lds_Test(unittest.TestCase):
         
         (code, json) = fetch.fetchCPCodeProducts(edgerc=edgeRc, section=None, account_key=None)        
         self.assertEqual(response.status_code, code)
-        self.runGetCPCodeProducts(json)
+        self.runParseElement(json)
 
     def testNewJsonPath(self):
 
-        lds = Lds()
+        lds = QueryResult()
         jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
 
         result = lds.buildandParseExpression(jsonObj, "$[*].id")
@@ -166,46 +166,46 @@ class Lds_Test(unittest.TestCase):
             if(error == True):
                 self.fail("buildandParseExpression() did not raise exception!")
 
-    def runGetCPCodeProducts(self, jsonObj):
+    def runParseElement(self, jsonObj):
 
-        lds = Lds()
-        result = lds.parseCPCodeProducts(jsonObj, ["$.id"])
+        lds = QueryResult()
+        result = lds.parseElement(jsonObj, ["$.id"])
         self.assertEqual(len(result ), 2)
         self.assertEqual("163842", result[0][0] )
         self.assertEqual("143296", result[1][0])
 
-        result = lds.parseCPCodeProducts(jsonObj, "$.id")
+        result = lds.parseElement(jsonObj, "$.id")
         self.assertEqual(len(result ), 2)
         self.assertEqual(result[0][0], "163842")
         self.assertEqual(result[1][0], "143296")
         
-        result = lds.parseCPCodeProducts(jsonObj, ["$.id", "$._dummy1"] )
+        result = lds.parseElement(jsonObj, ["$.id", "$._dummy1"] )
         self.assertEqual(len(result ), 0)
 
-        result = lds.parseCPCodeProducts(jsonObj, ["$._dummy2"] )
+        result = lds.parseElement(jsonObj, ["$._dummy2"] )
         self.assertEqual(len(result ), 0)
 
-        result = lds.parseCPCodeProducts(jsonObj, ["$._dummy3"] )
+        result = lds.parseElement(jsonObj, ["$._dummy3"] )
         self.assertEqual(len(result ), 0)
 
 
-        result = lds.parseCPCodeProducts(jsonObj, "$._dummy3b" )
+        result = lds.parseElement(jsonObj, "$._dummy3b" )
         self.assertEqual(len(result ), 0)
 
-        result = lds.parseCPCodeProducts(jsonObj, ["$.id", "$._dummy4"], False )
+        result = lds.parseElement(jsonObj, ["$.id", "$._dummy4"], False )
         self.assertEqual(len(result ), 2)
         self.assertEqual(result[0][0], "163842")
         self.assertEqual(result[1][0], "143296")
         
-        result = lds.parseCPCodeProducts(jsonObj, ["$.deliveryDetails"], False )
+        result = lds.parseElement(jsonObj, ["$.deliveryDetails"], False )
         self.assertEqual(len(result ), 2)
 
 
-        result = lds.parseCPCodeProducts(jsonObj, ["$..machine"], False )
+        result = lds.parseElement(jsonObj, ["$..machine"], False )
         self.assertEqual(len(result ), 1)
         self.assertEqual(result[0][0], "akainsight.upload.akamai.com")
 
-        result = lds.parseCPCodeProducts(jsonObj, ["$.logSource.id", "$.aggregationDetails.deliveryFrequency.value", "$.status", "$.encodingDetails.encoding.value"], True )
+        result = lds.parseElement(jsonObj, ["$.logSource.id", "$.aggregationDetails.deliveryFrequency.value", "$.status", "$.encodingDetails.encoding.value"], True )
         self.assertEqual(len(result ), 2)
         
         self.assertEqual(len(result[0] ), 4)
@@ -220,20 +220,20 @@ class Lds_Test(unittest.TestCase):
         self.assertEqual(result[1][2], "suspended")
         self.assertEqual(result[1][3], "GZIP & UUENCODED")
         
-        result = lds.parseCPCodeProducts(jsonObj, ["$[?(@.status=\"active\")].status"], True )
+        result = lds.parseElement(jsonObj, ["$[?(@.status=\"active\")].status"], True )
         self.assertEqual(len(result ), 1)
         self.assertEqual(result[0][0], "active")
 
-        result = lds.parseCPCodeProducts(jsonObj, ["$[?(@.status=\"active\")].status"] )
+        result = lds.parseElement(jsonObj, ["$[?(@.status=\"active\")].status"] )
         self.assertEqual(len(result ), 1)
         self.assertEqual(result[0][0], "active")
 
-        result = lds.parseCPCodeProducts(jsonObj, ["$[?(@.status=\"active\")].status", "$.logSource.id" ], True )
+        result = lds.parseElement(jsonObj, ["$[?(@.status=\"active\")].status", "$.logSource.id" ], True )
         self.assertEqual(len(result ), 1)
         self.assertEqual(result[0][0], "active")
         self.assertEqual(result[0][1], "200957-1")
 
-        result = lds.parseCPCodeProducts(jsonObj, ["$[?(@.status=\"active\")].status", "$.logSource.id" ], False )
+        result = lds.parseElement(jsonObj, ["$[?(@.status=\"active\")].status", "$.logSource.id" ], False )
         self.assertEqual(len(result ), 2)
         
         self.assertEqual(len(result[0] ), 2)
@@ -244,10 +244,10 @@ class Lds_Test(unittest.TestCase):
         self.assertEqual(result[1][0], "104523-1")
 
     def testYaml(self):
-        lds = Lds()
+        lds = QueryResult()
 
         jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
-        result = lds.parseDefault(jsonObj)
+        result = lds.parseCommandDefault(jsonObj)
         
         self.assertEqual(len(result ), 2)
         self.assertEqual(len(result[0] ), 4)
@@ -275,7 +275,7 @@ class Lds_Test(unittest.TestCase):
     def test_runGetCPCodeProducts(self):
        
         jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
-        self.runGetCPCodeProducts(jsonObj)
+        self.runParseElement(jsonObj)
         
         
 

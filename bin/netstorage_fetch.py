@@ -17,15 +17,15 @@ from akamai.edgegrid import EdgeGridAuth, EdgeRc
 from bin.credentialfactory import CredentialFactory
 from bin.fetch import Fetch_Akamai_OPENAPI_Response
 
-class LdsFetch(Fetch_Akamai_OPENAPI_Response):
+class NetStorageFetch(Fetch_Akamai_OPENAPI_Response):
 
 
-    def fetchCPCodeProducts(self, *, edgerc, section, account_key, debug=False):
+    def fetchNetStorageGroups(self, *, edgerc, section, account_key, debug=False):
 
         factory = CredentialFactory()
         context = factory.load(edgerc, section, account_key)
         
-        url = self.buildUrl("https://{}/lds-api/v3/log-sources/cpcode-products/log-configurations", context)
+        url = self.buildUrl("https://{}/storage/v1/storage-groups", context)
         
         result = context.session.get(url)
         return self.handleResponse(result, url, debug)

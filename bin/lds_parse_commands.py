@@ -17,12 +17,9 @@ import sys
 import os
 import json
 
-try:
-    from lds_fetch import LdsFetch
-    from lds import Lds
-except:
-    from bin.lds_fetch import LdsFetch
-    from bin.lds import Lds
+from bin.lds_fetch import LdsFetch
+from bin.netstorage_fetch import NetStorageFetch
+from bin.lds import QueryResult
 
 import json
 
@@ -39,7 +36,7 @@ def get_prog_name():
         prog = "akamai lds"
     return prog
 
-def create_sub_command( subparsers, name, help, *, optional_arguments=None, required_arguments=None):
+def create_sub_command( subparsers, name, help, *, optional_arguments=None, required_arguments=None, actions=None):
 
     action = subparsers.add_parser(name=name, help=help, add_help=False)
 
@@ -91,7 +88,9 @@ def create_sub_command( subparsers, name, help, *, optional_arguments=None, requ
         help="Account Switch Key",
         default="")
 
-    return action
+    actions[name] = action
+
+    #return action
 
 def main(mainArgs=None):
 
@@ -116,18 +115,18 @@ def main(mainArgs=None):
         help="Show available help",
         add_help=False).add_argument( 'args', metavar="", nargs=argparse.REMAINDER)
 
-    actions["cpcodelist"] = create_sub_command(
+    create_sub_command(
         subparsers, "cpcodelist", "List all cpcode based log delivery configurations",
         optional_arguments=[ 
                             {"name": "show-json", "help": "output json"},
                             {"name": "use-stdin", "help": "use stdin for yaml query"},
                             {"name": "file", "help": "the yaml file as input"} ],
-        required_arguments=None)
+        required_arguments=None, actions=actions)
 
-    actions["template"] = create_sub_command(
+    create_sub_command(
         subparsers, "template", "prints the default yaml query template",
         optional_arguments=None,
-        required_arguments=None)
+        required_arguments=None, actions=actions)
     
     args = None
 
@@ -170,7 +169,7 @@ def main(mainArgs=None):
         return 1
 
 def template(args):
-    lds = Lds()
+    lds = QueryResult()
     yaml = lds.getDefaultJsonQuery()
     print( json.dumps(yaml) )
     return 0
@@ -178,7 +177,7 @@ def template(args):
 def cpcodelist(args):
 
     fetch = LdsFetch()
-    lds = Lds()
+    lds = QueryResult()
 
     (_ , jsonObj) = fetch.fetchCPCodeProducts(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
 
@@ -199,7 +198,44 @@ def cpcodelist(args):
 
         else:
 
-            parsed = lds.parseDefault(jsonObj)
+            parsed = lds.parseCommandDefault(jsonObj)
+    
+        for line in parsed:
+            print( json.dumps(line) )
+
+    else: 
+        print( json.dumps( jsonObj, indent=1 ) )
+
+
+    return 0
+
+def netstoragelist(args):
+
+    fetch = NetStorageFetch()
+    lds = QueryResult()
+
+    
+
+    (_ , jsonObj) = fetch.fetchNetStorageGroups(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
+
+    if not args.show_json:
+
+        if args.use_stdin :
+            
+            yaml = getArgFromSTDIN()
+            
+            yamlObj = lds.loadJson(yaml)
+            parsed = lds.parseCommandGeneric(jsonObj , yamlObj)
+
+        elif args.file is not None :
+            
+            yaml = getArgFromFile(args.file)
+            yamlObj = lds.loadJson(yaml)
+            parsed = lds.parseCommandGeneric(jsonObj , yamlObj)
+
+        else:
+
+            parsed = lds.parseCommandDefault(jsonObj)
     
         for line in parsed:
             print( json.dumps(line) )
