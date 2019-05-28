@@ -78,3 +78,10 @@ cat custom-query.json | akamai lds cpcodelist --use-stdin
 
 ```
 
+## Install
+use Akamai CLI and install command:
+
+```bash
+akamai install https://github.com/aalquist/cli-lds
+
+```
