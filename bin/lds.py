@@ -53,7 +53,7 @@ class Lds():
 
     def getDefaultJsonQuery(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        queryjson = os.path.join(dir_path, "queries", "default.json")
+        queryjson = os.path.join(dir_path, "queries", "lds", "default.json")
         return self.getJsonQueryFile(queryjson)
     
     def parseDefault(self, json):
