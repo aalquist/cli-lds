@@ -122,12 +122,14 @@ def main(mainArgs=None):
                             {"name": "use-stdin", "help": "use stdin for query"},
                             {"name": "file", "help": "the json file for query"},
                             {"name": "template", "help": "use template name for query"} ],
-        required_arguments=None)
+        required_arguments=None,
+        actions=actions)
 
     create_sub_command(
         subparsers, "template", "prints the default yaml query template",
         optional_arguments=[  {"name": "get", "help": "get template by name"}],
-        required_arguments=None)
+        required_arguments=None,
+        actions=actions)
     
     args = None
 
@@ -247,6 +249,13 @@ def netstoragelist(args):
             yamlObj = lds.loadJson(yaml)
             parsed = lds.parseCommandGeneric(jsonObj , yamlObj)
 
+        elif args.template is None :
+
+                print( "--template {} doesn't exist. chose one of these options instead".format(args.template), file=sys.stderr )
+                validNames = lds.listQuery()
+                print( json.dumps( validNames, indent=1 ), file=sys.stderr )
+                return 1
+
         else:
 
             parsed = lds.parseCommandDefault(jsonObj)
@@ -261,12 +270,7 @@ def netstoragelist(args):
                 print( json.dumps( validNames, indent=1 ), file=sys.stderr )
                 return 1
     
-        elif args.template is None :
-
-                print( "--template {} doesn't exist. chose one of these options instead".format(args.template), file=sys.stderr )
-                validNames = lds.listQuery()
-                print( json.dumps( validNames, indent=1 ), file=sys.stderr )
-                return 1
+        
 
 
         for line in parsed:
