@@ -120,15 +120,14 @@ def main(mainArgs=None):
         subparsers, "cpcodelist", "List all cpcode based log delivery configurations",
         optional_arguments=[ 
                             {"name": "show-json", "help": "output json"},
-                            {"name": "use-stdin", "help": "use stdin for yaml query"},
-                            {"name": "file", "help": "the yaml file as input"} ],
+                            {"name": "use-stdin", "help": "use stdin for query"},
+                            {"name": "file", "help": "the json file for query"},
+                            {"name": "template", "help": "use template name for query"} ],
         required_arguments=None)
 
     actions["template"] = create_sub_command(
         subparsers, "template", "prints the default yaml query template",
-        optional_arguments=[    
-                                {"name": "show-list", "help": "get templates names"},
-                                {"name": "get", "help": "get template by name"}],
+        optional_arguments=[  {"name": "get", "help": "get template by name"}],
         required_arguments=None)
     
     args = None
@@ -187,7 +186,7 @@ def template(args):
         
         
 
-    print( json.dumps(obj) )
+    print( json.dumps(obj,indent=1) )
     return 0
 
 def cpcodelist(args):
@@ -212,9 +211,18 @@ def cpcodelist(args):
             yamlObj = lds.loadJson(yaml)
             parsed = lds.parseCommandGeneric(jsonObj , yamlObj)
 
-        else:
+        elif args.template is not None :
 
-            parsed = lds.parseDefault(jsonObj)
+            validNames = lds.listQuery()
+
+            if args.template in validNames:
+                yamlObj = lds.getNonDefaultQuery(args.template)
+                parsed = lds.parseCommandGeneric(jsonObj , yamlObj)
+
+            else:
+                print( "--template {} doesn't exist. chose one of these options instead".format(args.template), file=sys.stderr )
+                print( json.dumps( validNames, indent=1 ), file=sys.stderr )
+                return 1
     
         for line in parsed:
             print( json.dumps(line) )
