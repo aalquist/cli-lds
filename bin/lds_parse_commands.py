@@ -224,6 +224,14 @@ def cpcodelist(args):
                 print( json.dumps( validNames, indent=1 ), file=sys.stderr )
                 return 1
     
+        elif args.template is None :
+
+                print( "--template {} doesn't exist. chose one of these options instead".format(args.template), file=sys.stderr )
+                validNames = lds.listQuery()
+                print( json.dumps( validNames, indent=1 ), file=sys.stderr )
+                return 1
+
+
         for line in parsed:
             print( json.dumps(line) )
 
