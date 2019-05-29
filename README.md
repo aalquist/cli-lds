@@ -7,7 +7,7 @@ Quick and dirty Log Delivery Service (LDS) command line tool to view and audit s
 
 ## Example Commands Report Commands
 
-Basic command with default output and filters
+Basic command that uses the default settings
 
 ```bash
 akamai lds cpcodelist
@@ -37,7 +37,7 @@ akamai lds cpcodelist | jq -r '. | @csv'
 ```
 
 
-View RAW LDS Json used  
+View RAW LDS Json   
 
 ```bash
 akamai lds cpcodelist --show-json
@@ -52,13 +52,14 @@ akamai lds template --get active-gpg.json > custom-query.json
 
 ```
 
-modify custom-query.json based on RAW json from --show-json. Each json key pair value is using JSONPath which can extract value and/or filter to specific values
+Using an existing template as a guide, modify the saved custom-query.json to filter for specific values you want. Tip: use the --show-json flag to see what other values are available. For simplicty, JSONPath is re-executed against each entity and not the entire json response from --show-json. JSONPath can be used to extract values or filter output to match your needs. 
 
 ```bash
 vi custom-query.json
 
 ```
 
+Example Template saved to local file:
 
 ```json
 {
@@ -71,7 +72,7 @@ vi custom-query.json
 
 ```
 
-Pipe in custom filter
+Just like the other commands, pipe your custom filter into the tool 
 
 ```bash
 cat custom-query.json | akamai lds cpcodelist --use-stdin
