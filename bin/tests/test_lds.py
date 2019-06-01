@@ -19,7 +19,7 @@ import sys
 from io import StringIO
 
 
-from bin.lds import QueryResult
+from bin.query_result import LDSResult
 from bin.lds_fetch import LdsFetch
 from bin.lds_parse_commands import main 
 
@@ -119,7 +119,7 @@ class Lds_Test(unittest.TestCase):
 
     def testNewJsonPath(self):
 
-        lds = QueryResult()
+        lds = LDSResult()
         jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
 
         result = lds.buildandParseExpression(jsonObj, "$[*].id")
@@ -171,7 +171,7 @@ class Lds_Test(unittest.TestCase):
 
     def runParseElement(self, jsonObj):
 
-        lds = QueryResult()
+        lds = LDSResult()
         result = lds.parseElement(jsonObj, ["$.id"])
         self.assertEqual(len(result ), 2)
         self.assertEqual("163842", result[0][0] )
@@ -247,7 +247,7 @@ class Lds_Test(unittest.TestCase):
         self.assertEqual(result[1][0], "104523-1")
 
     def testYaml(self):
-        lds = QueryResult()
+        lds = LDSResult()
 
         jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
         result = lds.parseCommandDefault(jsonObj)
