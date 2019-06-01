@@ -19,6 +19,7 @@ import json
 
 
 from bin.lds_fetch import LdsFetch
+from bin.netstorage_fetch import NetStorageFetch
 from bin.lds import Lds
 
 import json
@@ -232,6 +233,63 @@ def cpcodelist(args):
                 validNames = lds.listQuery()
                 print( json.dumps( validNames, indent=1 ), file=sys.stderr )
                 return 1
+
+
+        for line in parsed:
+            print( json.dumps(line) )
+
+    else: 
+        print( json.dumps( jsonObj, indent=1 ) )
+
+
+    return 0
+
+def netstoragelist(args):
+
+    fetch = NetStorageFetch()
+    lds = QueryResult()
+
+    
+
+    (_ , jsonObj) = fetch.fetchNetStorageGroups(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
+
+    if not args.show_json:
+
+        if args.use_stdin :
+            
+            yaml = getArgFromSTDIN()
+            
+            yamlObj = lds.loadJson(yaml)
+            parsed = lds.parseCommandGeneric(jsonObj , yamlObj)
+
+        elif args.file is not None :
+            
+            yaml = getArgFromFile(args.file)
+            yamlObj = lds.loadJson(yaml)
+            parsed = lds.parseCommandGeneric(jsonObj , yamlObj)
+
+        elif args.template is None :
+
+                print( "--template {} doesn't exist. chose one of these options instead".format(args.template), file=sys.stderr )
+                validNames = lds.listQuery()
+                print( json.dumps( validNames, indent=1 ), file=sys.stderr )
+                return 1
+
+        else:
+
+            parsed = lds.parseCommandDefault(jsonObj)
+            validNames = lds.listQuery()
+
+            if args.template in validNames:
+                yamlObj = lds.getNonDefaultQuery(args.template)
+                parsed = lds.parseCommandGeneric(jsonObj , yamlObj)
+
+            else:
+                print( "--template {} doesn't exist. chose one of these options instead".format(args.template), file=sys.stderr )
+                print( json.dumps( validNames, indent=1 ), file=sys.stderr )
+                return 1
+    
+        
 
 
         for line in parsed:
