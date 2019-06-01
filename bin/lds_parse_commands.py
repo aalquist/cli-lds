@@ -17,12 +17,9 @@ import sys
 import os
 import json
 
-try:
-    from lds_fetch import LdsFetch
-    from lds import Lds
-except:
-    from bin.lds_fetch import LdsFetch
-    from bin.lds import Lds
+
+from bin.lds_fetch import LdsFetch
+from bin.lds import Lds
 
 import json
 
@@ -112,26 +109,14 @@ def main(mainArgs=None):
     actions = {}
 
     subparsers.add_parser(
-        name="help",
-        help="Show available help",
-        add_help=False).add_argument( 'args', metavar="", nargs=argparse.REMAINDER)
-
-    actions["cpcodelist"] = create_sub_command(
-        subparsers, "cpcodelist", "List all cpcode based log delivery configurations",
-        optional_arguments=[ 
-                            {"name": "show-json", "help": "output json"},
-                            {"name": "use-stdin", "help": "use stdin for query"},
-                            {"name": "file", "help": "the json file for query"},
-                            {"name": "template", "help": "use template name for query"} ],
-        required_arguments=None)
-
-    actions["template"] = create_sub_command(
-        subparsers, "template", "prints the default yaml query template",
-        optional_arguments=[  {"name": "get", "help": "get template by name"}],
-        required_arguments=None)
+    name="help",
+    help="Show available help",
+    add_help=False).add_argument( 'args', metavar="", nargs=argparse.REMAINDER)
     
-    args = None
+    setupmainargs(actions, subparsers)
 
+    args = None
+    
 
 
     if mainArgs is None: 
@@ -169,6 +154,23 @@ def main(mainArgs=None):
     except Exception as e:
         print(e, file=sys.stderr)
         return 1
+
+def setupmainargs(actions, subparsers):
+
+
+    actions["cpcodelist"] = create_sub_command(
+        subparsers, "cpcodelist", "List all cpcode based log delivery configurations",
+        optional_arguments=[ 
+                            {"name": "show-json", "help": "output json"},
+                            {"name": "use-stdin", "help": "use stdin for query"},
+                            {"name": "file", "help": "the json file for query"},
+                            {"name": "template", "help": "use template name for query"} ],
+        required_arguments=None)
+
+    actions["template"] = create_sub_command(
+        subparsers, "template", "prints the default yaml query template",
+        optional_arguments=[  {"name": "get", "help": "get template by name"}],
+        required_arguments=None)
 
 def template(args):
     lds = Lds()
