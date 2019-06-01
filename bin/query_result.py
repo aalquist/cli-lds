@@ -22,6 +22,9 @@ from jsonpath2.path import Path
 
 class QueryResult():
 
+    def getQueryType(self):
+        return "default"
+
     def buildParseExp(self, paths):
         
         try:
@@ -51,15 +54,27 @@ class QueryResult():
             data = self.loadJson(jsonStr)
             return data
 
+
+    def getQuerybyName(self, argname):
+
+        validNames = self.listQuery()
+
+        if argname in validNames:
+            obj = self.getNonDefaultQuery(argname)
+        else: 
+            obj = validNames
+        
+        return obj
+
     def listQuery(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        ldsdir = os.path.join(dir_path, "queries", "lds")
+        ldsdir = os.path.join(dir_path, "queries", self.getQueryType() )
         listdir = os.listdir(ldsdir)
 
         returnlist = []
 
         for f in listdir:
-            fullname = os.path.join(dir_path, "queries", "lds", f)
+            fullname = os.path.join(dir_path, "queries", self.getQueryType(), f)
 
             if os.path.isfile(fullname):
                 returnlist.append(f)
@@ -69,12 +84,12 @@ class QueryResult():
 
     def getNonDefaultQuery(self, name):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        queryjson = os.path.join(dir_path, "queries", "lds", name )
+        queryjson = os.path.join(dir_path, "queries", self.getQueryType(), name )
         return self.getJsonQueryFile(queryjson)
 
     def getDefaultJsonQuery(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
-        queryjson = os.path.join(dir_path, "queries", "lds", "default.json")
+        queryjson = os.path.join(dir_path, "queries", self.getQueryType(), "default.json")
         return self.getJsonQueryFile(queryjson)
     
     def parseCommandDefault(self, json):
@@ -131,4 +146,6 @@ class QueryResult():
 
         return returnList
 
-    
+class LDSResult(QueryResult):
+    def getQueryType(self):
+        return "lds"

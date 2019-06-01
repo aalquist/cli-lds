@@ -19,7 +19,7 @@ import json
 
 from bin.lds_fetch import LdsFetch
 from bin.netstorage_fetch import NetStorageFetch
-from bin.lds import QueryResult
+from bin.query_result import LDSResult
 
 import json
 
@@ -175,13 +175,13 @@ def main(mainArgs=None):
 
 
 def template(args):
-    lds = QueryResult()
+    lds = LDSResult()
 
     if args.get is None:
         obj = lds.listQuery()
     else:
 
-        obj = lds.getTemplate(args.get)
+        obj = lds.getQuerybyName(args.get)
         
 
     print( json.dumps(obj,indent=1) )
@@ -192,7 +192,7 @@ def template(args):
 def cpcodelist(args):
 
     fetch = LdsFetch()
-    lds = QueryResult()
+    lds = LDSResult()
 
     (_ , jsonObj) = fetch.fetchCPCodeProducts(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
 
@@ -212,7 +212,7 @@ def cpcodelist(args):
 
         elif args.template is not None :
 
-            templateJson = lds.getTemplate(args.template)
+            templateJson = lds.getQuerybyName(args.template)
             parsed = lds.parseCommandGeneric(jsonObj, templateJson)
 
         else:
@@ -232,9 +232,7 @@ def cpcodelist(args):
 def netstoragelist(args):
 
     fetch = NetStorageFetch()
-    lds = QueryResult()
-
-    
+    lds = LDSResult()
 
     (_ , jsonObj) = fetch.fetchNetStorageGroups(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
 
