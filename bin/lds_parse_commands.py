@@ -17,10 +17,9 @@ import sys
 import os
 import json
 
-
 from bin.lds_fetch import LdsFetch
 from bin.netstorage_fetch import NetStorageFetch
-from bin.lds import Lds
+from bin.lds import QueryResult
 
 import json
 
@@ -37,7 +36,7 @@ def get_prog_name():
         prog = "akamai lds"
     return prog
 
-def create_sub_command( subparsers, name, help, *, optional_arguments=None, required_arguments=None):
+def create_sub_command( subparsers, name, help, *, optional_arguments=None, required_arguments=None, actions=None):
 
     action = subparsers.add_parser(name=name, help=help, add_help=False)
 
@@ -89,7 +88,9 @@ def create_sub_command( subparsers, name, help, *, optional_arguments=None, requ
         help="Account Switch Key",
         default="")
 
-    return action
+    actions[name] = action
+
+    #return action
 
 def main(mainArgs=None):
 
@@ -110,11 +111,27 @@ def main(mainArgs=None):
     actions = {}
 
     subparsers.add_parser(
-    name="help",
-    help="Show available help",
-    add_help=False).add_argument( 'args', metavar="", nargs=argparse.REMAINDER)
+        name="help",
+        help="Show available help",
+        add_help=False).add_argument( 'args', metavar="", nargs=argparse.REMAINDER)
+
+    create_sub_command(
+        subparsers, "cpcodelist", "List all cpcode based log delivery configurations",
+        optional_arguments=[ 
+                            {"name": "show-json", "help": "output json"},
+                            {"name": "use-stdin", "help": "use stdin for query"},
+                            {"name": "file", "help": "the json file for query"},
+                            {"name": "template", "help": "use template name for query"} ],
+        required_arguments=None,
+        actions=actions)
+
+    create_sub_command(
+        subparsers, "template", "prints the default yaml query template",
+        optional_arguments=[  {"name": "get", "help": "get template by name"}],
+        required_arguments=None,
+        actions=actions)
     
-    setupmainargs(actions, subparsers)
+    #setupmainargs(actions, subparsers)
 
     args = None
     
@@ -156,48 +173,70 @@ def main(mainArgs=None):
         print(e, file=sys.stderr)
         return 1
 
-def setupmainargs(actions, subparsers):
-
-
-    actions["cpcodelist"] = create_sub_command(
-        subparsers, "cpcodelist", "List all cpcode based log delivery configurations",
-        optional_arguments=[ 
-                            {"name": "show-json", "help": "output json"},
-                            {"name": "use-stdin", "help": "use stdin for query"},
-                            {"name": "file", "help": "the json file for query"},
-                            {"name": "template", "help": "use template name for query"} ],
-        required_arguments=None)
-
-    actions["template"] = create_sub_command(
-        subparsers, "template", "prints the default yaml query template",
-        optional_arguments=[  {"name": "get", "help": "get template by name"}],
-        required_arguments=None)
 
 def template(args):
-    lds = Lds()
+    lds = QueryResult()
 
     if args.get is None:
         obj = lds.listQuery()
     else:
 
-        validNames = lds.listQuery()
-
-        if args.get in validNames:
-            obj = lds.getNonDefaultQuery(args.get)
-        else: 
-            obj = validNames
-        
+        obj = lds.getTemplate(args.get)
         
 
     print( json.dumps(obj,indent=1) )
     return 0
 
+
+
 def cpcodelist(args):
 
     fetch = LdsFetch()
-    lds = Lds()
+    lds = QueryResult()
 
     (_ , jsonObj) = fetch.fetchCPCodeProducts(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
+
+    if not args.show_json:
+
+        if args.use_stdin :
+            
+            inputString = getArgFromSTDIN()
+            templateJson = lds.loadJson(inputString)
+            parsed = lds.parseCommandGeneric(jsonObj , templateJson)
+
+        elif args.file is not None :
+            
+            inputString = getArgFromFile(args.file)
+            templateJson = lds.loadJson(inputString)
+            parsed = lds.parseCommandGeneric(jsonObj , templateJson)
+
+        elif args.template is not None :
+
+            templateJson = lds.getTemplate(args.template)
+            parsed = lds.parseCommandGeneric(jsonObj, templateJson)
+
+        else:
+            
+            parsed = lds.parseCommandDefault(jsonObj)
+
+    
+        for line in parsed:
+            print( json.dumps(line) )
+
+    else: 
+        print( json.dumps( jsonObj, indent=1 ) )
+
+
+    return 0
+
+def netstoragelist(args):
+
+    fetch = NetStorageFetch()
+    lds = QueryResult()
+
+    
+
+    (_ , jsonObj) = fetch.fetchNetStorageGroups(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
 
     if not args.show_json:
 
@@ -214,8 +253,16 @@ def cpcodelist(args):
             yamlObj = lds.loadJson(yaml)
             parsed = lds.parseCommandGeneric(jsonObj , yamlObj)
 
-        elif args.template is not None :
+        elif args.template is None :
 
+                print( "--template {} doesn't exist. chose one of these options instead".format(args.template), file=sys.stderr )
+                validNames = lds.listQuery()
+                print( json.dumps( validNames, indent=1 ), file=sys.stderr )
+                return 1
+
+        else:
+
+            parsed = lds.parseCommandDefault(jsonObj)
             validNames = lds.listQuery()
 
             if args.template in validNames:
@@ -227,12 +274,7 @@ def cpcodelist(args):
                 print( json.dumps( validNames, indent=1 ), file=sys.stderr )
                 return 1
     
-        elif args.template is None :
-
-                print( "--template {} doesn't exist. chose one of these options instead".format(args.template), file=sys.stderr )
-                validNames = lds.listQuery()
-                print( json.dumps( validNames, indent=1 ), file=sys.stderr )
-                return 1
+        
 
 
         for line in parsed:
