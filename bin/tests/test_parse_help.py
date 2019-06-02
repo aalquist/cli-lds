@@ -28,51 +28,56 @@ class ParseCmdTest(unittest.TestCase):
 
         args = [ "help"]
         #print("\n###testing args: {}".format(args))
-        result = self.redirectOutputToArray(lambda args : main(args) , args, False)
+        result, _ = self.redirectOutputToArray(lambda args : main(args) , args, False)
         self.assertTrue(len(result) > 0 )
-
         
         args = [ "help", "template"]
         #print("\n###testing args: {}".format(args))
-        result = self.redirectOutputToArray(lambda args : main(args) , args, False)
+        result, _ = self.redirectOutputToArray(lambda args : main(args) , args, False)
         self.assertTrue(len(result) > 0 )
 
         args = [ "help", "not_a_command"]
         #print("\n###testing args: {}".format(args))
-        result = self.redirectOutputToArray(lambda args : main(args) , args, True)
+        result, _ = self.redirectOutputToArray(lambda args : main(args) , args, True)
         self.assertTrue(len(result) == 0 )
 
         args = [ "help", "not_a_command"]
         #print("\n###testing args: {}".format(args))
-        result = self.redirectOutputToArray(lambda args : main(None) , args, True)
+        result, _ = self.redirectOutputToArray(lambda args : main(None) , args, True)
         self.assertTrue(len(result) == 0 )
 
         args = [ "help", "not_a_command"]
         #print("\n###testing args: {}".format(args))
         
         args = list([])
-        result = self.redirectOutputToArray(lambda args : main(args) , args, True)
+        result, _ = self.redirectOutputToArray(lambda args : main(args) , args, True)
         self.assertTrue(len(result) == 0 )
 
 
     def redirectOutputToArray(self, fun, value, ignoreNewLines = True):
 
         saved_stdout = sys.stdout
-        
         out = StringIO()
         sys.stdout = out
+
+        saved_stderr = sys.stderr
+        outerr = StringIO()
+        sys.stderr = outerr
         
         fun(value)
 
         output = list(out.getvalue().split("\n"))
-        
+        erroutput = list(outerr.getvalue().split("\n"))
+
         if ignoreNewLines:
             output = list(filter(lambda line: line != '', output))
+            erroutput = list(filter(lambda line: line != '', erroutput))
 
         
         sys.stdout = saved_stdout
+        sys.stderr = saved_stderr
 
-        return output
+        return (output, erroutput)
        
 
 if __name__ == '__main__':

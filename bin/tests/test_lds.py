@@ -86,7 +86,52 @@ class Lds_Test(unittest.TestCase):
                 ]
 
         self._testParseLDSCommandCombo(args)
-       
+
+    @patch('requests.Session')
+    def testJsonResponse(self, mockSessionObj):
+
+        response = MockResponse()
+        response.status_code = 200
+        response.jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
+
+        session = mockSessionObj()
+        session.get.return_value = response
+
+        edgeRc = "{}/bin/tests/other/.dummy_edgerc".format(os.getcwd())
+
+        args = [ "cpcodelist",
+                "--section",
+                "default",
+                 "--edgerc",
+                edgeRc,
+                "--show-json"
+                ]
+
+        saved_stdout = sys.stdout
+        finaloutput = None
+
+        try:
+            out = StringIO()
+            sys.stdout = out
+            
+            self.assertEqual(main(args), 0, "command args {} should return successcode".format(args) )
+
+            output = list(out.getvalue().split("\n"))
+            finaloutput = list(filter(lambda line: line != '', output))
+
+           
+            self.assertGreater(len(finaloutput), 0, "command args {} and its output should be greater than zero".format(args) )
+            
+
+            self.assertEqual(302, len(finaloutput))
+            
+
+        finally:
+            pass
+            sys.stdout = saved_stdout
+
+    
+   
 
     def _testParseLDSCommandCombo(self, args):
 

@@ -39,6 +39,32 @@ class MockResponse:
 class NetStorage_Test(unittest.TestCase):
 
     
+    def testTemplateNames(self):
+
+        args = [ "template"]
+
+        saved_stdout = sys.stdout
+        finaloutput = None
+
+        try:
+            out = StringIO()
+            sys.stdout = out
+            
+            self.assertEqual(main(args), 0, "command args {} should return successcode".format(args) )
+
+            output = list(out.getvalue().split("\n"))
+            finaloutput = list(filter(lambda line: line != '', output))
+
+           
+            self.assertGreater(len(finaloutput), 0, "command args {} and its output should be greater than zero".format(args) )
+            
+            jsondict = json.loads(out.getvalue())  
+            self.assertGreaterEqual( len(jsondict), 3 )
+
+        finally:
+            pass
+            sys.stdout = saved_stdout
+
     def testMainBootStrap(self):
 
        
