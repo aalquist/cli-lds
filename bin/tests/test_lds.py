@@ -60,6 +60,36 @@ class Lds_Test(unittest.TestCase):
                 "default.json"
                 ]
 
+        self._testParseLDSCommandCombo(args)
+
+        file = "{}/bin/queries/lds/default.json".format(os.getcwd()) 
+
+        args = [ "cpcodelist",
+                "--section",
+                "default",
+                 "--edgerc",
+                edgeRc,
+                "--debug",
+                "--file",
+                file
+                ]
+
+        self._testParseLDSCommandCombo(args)
+
+        args = [ "cpcodelist",
+                "--section",
+                "default",
+                 "--edgerc",
+                edgeRc,
+                "--debug"
+                
+                ]
+
+        self._testParseLDSCommandCombo(args)
+       
+
+    def _testParseLDSCommandCombo(self, args):
+
         saved_stdout = sys.stdout
         finaloutput = None
 
@@ -96,7 +126,6 @@ class Lds_Test(unittest.TestCase):
             pass
             sys.stdout = saved_stdout
 
-        
     
     @patch('requests.Session')
     def testFetchCPCodeProducts(self, mockSessionObj):
