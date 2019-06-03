@@ -3,17 +3,21 @@ import unittest
 import coverage
 import sys
 
-def runTests():
-    tests = unittest.TestLoader().discover('bin/tests')
+def runTests(filePattern=None):
+    if filePattern is not None:
+        tests = unittest.TestLoader().discover('bin/tests/', pattern="test_lds.py")
+    else:
+        tests = unittest.TestLoader().discover('bin/tests/')
     result = unittest.TextTestRunner(verbosity=2).run(tests)
     return result
 
-def mainOnlyTest():
+def mainOnlyTest(filePattern=None):
 
     try:
-        result = runTests()
+        result = runTests(filePattern)
 
-    except Exception:
+    except Exception as e:
+        print(e, file=sys.stderr)
         return 1
 
     if result.wasSuccessful():
@@ -66,8 +70,13 @@ def mainTestWithCoverage():
 
 if __name__ == '__main__':
 
+
+
     if len(sys.argv) > 1:
-        sys.exit(mainOnlyTest())
+        if "no_coverage" != sys.argv[1] :
+            sys.exit(mainOnlyTest(sys.argv[1]))
+        else:
+            sys.exit(mainOnlyTest())
         
     else:
         sys.exit(mainTestWithCoverage())

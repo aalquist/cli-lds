@@ -171,6 +171,8 @@ class Lds_Test(unittest.TestCase):
             pass
             sys.stdout = saved_stdout
 
+        return finaloutput
+
     
     @patch('requests.Session')
     def testFetchCPCodeProducts(self, mockSessionObj):
@@ -231,6 +233,12 @@ class Lds_Test(unittest.TestCase):
         
 
         try:
+            #enable - suppress expected error messages during tests
+            saved_stdout = sys.stderr
+
+            out = StringIO()
+            sys.stderr = out
+
             result = lds.buildandParseExpression(jsonObj[1], ".logSource.id")
             error = True
 
@@ -239,7 +247,8 @@ class Lds_Test(unittest.TestCase):
             self.assertEqual("JSON path: .logSource.id error: line 1:0 missing '$' at '.'", message )
             
         finally:
-
+            #rollback - suppress expected error messages during tests
+            sys.stderr = saved_stdout
             if(error == True):
                 self.fail("buildandParseExpression() did not raise exception!")
 

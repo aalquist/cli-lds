@@ -19,7 +19,7 @@ import json
 
 from bin.lds_fetch import LdsFetch
 from bin.netstorage_fetch import NetStorageFetch
-from bin.query_result import LDSResult
+from bin.query_result import LDSResult, NetStorageResult
 
 import json
 
@@ -131,7 +131,16 @@ def main(mainArgs=None):
         required_arguments=None,
         actions=actions)
     
-    #setupmainargs(actions, subparsers)
+    create_sub_command(
+        subparsers, "netstoragelist", "List netstroage information",
+        optional_arguments=[ 
+                            {"name": "show-json", "help": "output json"},
+                            {"name": "use-stdin", "help": "use stdin for query"},
+                            {"name": "file", "help": "the json file for query"},
+                            {"name": "template", "help": "use template name for query"} ],
+        required_arguments=None,
+        actions=actions)
+    
 
     args = None
     
@@ -230,7 +239,7 @@ def cpcodelist(args):
 def netstoragelist(args):
 
     fetch = NetStorageFetch()
-    lds = LDSResult()
+    lds = NetStorageResult()
 
     (_ , jsonObj) = fetch.fetchNetStorageGroups(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
 
@@ -249,12 +258,10 @@ def netstoragelist(args):
             yamlObj = lds.loadJson(yaml)
             parsed = lds.parseCommandGeneric(jsonObj , yamlObj)
 
-        elif args.template is None :
+        elif args.template is not None :
 
-                print( "--template {} doesn't exist. chose one of these options instead".format(args.template), file=sys.stderr )
-                validNames = lds.listQuery()
-                print( json.dumps( validNames, indent=1 ), file=sys.stderr )
-                return 1
+            templateJson = lds.getQuerybyName(args.template)
+            parsed = lds.parseCommandGeneric(jsonObj, templateJson)
 
         else:
 

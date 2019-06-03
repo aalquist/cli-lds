@@ -28,6 +28,12 @@ class NetStorageFetch(Fetch_Akamai_OPENAPI_Response):
         url = self.buildUrl("https://{}/storage/v1/storage-groups", context)
         
         result = context.session.get(url)
-        return self.handleResponse(result, url, debug)
+        code, json = self.handleResponse(result, url, debug)
+
+        if code in [200] and "items" in json:
+            json = json["items"]
+            return (code, json)
+        else:
+            return (code, json)
         
     

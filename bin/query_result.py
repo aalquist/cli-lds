@@ -149,3 +149,7 @@ class QueryResult():
 class LDSResult(QueryResult):
     def getQueryType(self):
         return "lds"
+
+class NetStorageResult(QueryResult):
+    def getQueryType(self):
+        return "netstorage"
