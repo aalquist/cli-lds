@@ -19,11 +19,7 @@ import configparser
 import sys
 import json
 
-try:
-    from credentialfactory import CredentialFactory
-    
-except:
-    from bin.credentialfactory import CredentialFactory
+from bin.credentialfactory import CredentialFactory
 
 class Fetch_Akamai_OPENAPI_Response():
 

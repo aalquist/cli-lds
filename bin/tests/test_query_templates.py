@@ -20,7 +20,7 @@ from io import StringIO
 
 
 from bin.query_result import QueryResult
-from bin.lds_fetch import LdsFetch
+from bin.fetch_lds import LdsFetch
 from bin.lds_parse_commands import main 
 
 from unittest.mock import patch

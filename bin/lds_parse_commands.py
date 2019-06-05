@@ -17,8 +17,8 @@ import sys
 import os
 import json
 
-from bin.lds_fetch import LdsFetch
-from bin.netstorage_fetch import NetStorageFetch
+from bin.fetch_lds import LdsFetch
+from bin.fetch_netstorage import NetStorageFetch
 from bin.query_result import QueryResult
 
 import json
