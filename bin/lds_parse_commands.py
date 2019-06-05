@@ -19,7 +19,7 @@ import json
 
 from bin.lds_fetch import LdsFetch
 from bin.netstorage_fetch import NetStorageFetch
-from bin.query_result import LDSResult, NetStorageResult
+from bin.query_result import QueryResult
 
 import json
 
@@ -184,7 +184,7 @@ def main(mainArgs=None):
 
 
 def template(args):
-    lds = LDSResult()
+    lds = QueryResult("lds")
 
     if args.get is None:
         obj = lds.listQuery()
@@ -201,7 +201,7 @@ def template(args):
 def cpcodelist(args):
 
     fetch = LdsFetch()
-    lds = LDSResult()
+    lds = QueryResult("lds")
 
     (_ , jsonObj) = fetch.fetchCPCodeProducts(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
 
@@ -239,18 +239,16 @@ def cpcodelist(args):
 def netstoragelist(args):
 
     fetch = NetStorageFetch()
-    lds = NetStorageResult()
-
+    lds = QueryResult("netstorage")
+    
     (_ , jsonObj) = fetch.fetchNetStorageGroups(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
 
     if not args.show_json:
 
         if args.use_stdin :
             
-            yaml = getArgFromSTDIN()
-            
-            yamlObj = lds.loadJson(yaml)
-            parsed = lds.parseCommandGeneric(jsonObj , yamlObj)
+            inputString = getArgFromSTDIN() 
+            parsed = loadInput(lds, inputString, jsonObj) 
 
         elif args.file is not None :
             
@@ -265,23 +263,12 @@ def netstoragelist(args):
 
         else:
 
-            parsed = lds.parseCommandDefault(jsonObj)
-            validNames = lds.listQuery()
+            parsed = lds.parseCommandDefault(jsonObj) 
 
-            if args.template in validNames:
-                yamlObj = lds.getNonDefaultQuery(args.template)
-                parsed = lds.parseCommandGeneric(jsonObj , yamlObj)
-
-            else:
-                print( "--template {} doesn't exist. chose one of these options instead".format(args.template), file=sys.stderr )
-                print( json.dumps( validNames, indent=1 ), file=sys.stderr )
-                return 1
-    
-        
+        for line in parsed: 
+            print( json.dumps(line) ) 
 
 
-        for line in parsed:
-            print( json.dumps(line) )
 
     else: 
         print( json.dumps( jsonObj, indent=1 ) )

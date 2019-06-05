@@ -18,8 +18,7 @@ import json
 import sys
 from io import StringIO
 
-
-from bin.query_result import LDSResult
+from bin.query_result import QueryResult
 from bin.lds_fetch import LdsFetch
 from bin.lds_parse_commands import main 
 
@@ -59,7 +58,7 @@ class NetStorage_Test(unittest.TestCase):
                 ]
 
         (_, _) = self._testMainArgsAndGetResponseStdOutArray(args)
-        #stringOut = out.getvalue()
+        
 
 
         args = [ "netstoragelist",
@@ -73,9 +72,33 @@ class NetStorage_Test(unittest.TestCase):
                 
                 ]
 
-        (_, out) = self._testMainArgsAndGetResponseStdOutArray(args)
-        #stringOut = out.getvalue()
-        pass
+        (_, _) = self._testMainArgsAndGetResponseStdOutArray(args)
+
+
+        args = [ "netstoragelist",
+                "--section",
+                "default",
+                 "--edgerc",
+                edgeRc,
+                "--file",
+                "{}/bin/queries/netstorage/default.json".format(os.getcwd()),
+                "--debug"
+                
+                ]
+
+        (_, _) = self._testMainArgsAndGetResponseStdOutArray(args)
+
+        args = [ "netstoragelist",
+                "--section",
+                "default",
+                 "--edgerc",
+                edgeRc,
+                "--debug"
+                
+                ]
+
+        (_, _) = self._testMainArgsAndGetResponseStdOutArray(args)
+
 
 
     def _testMainArgsAndGetResponseStdOutArray(self, args):

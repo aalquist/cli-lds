@@ -19,7 +19,7 @@ import sys
 from io import StringIO
 
 
-from bin.query_result import LDSResult
+from bin.query_result import QueryResult
 from bin.lds_fetch import LdsFetch
 from bin.lds_parse_commands import main 
 
@@ -195,7 +195,7 @@ class Lds_Test(unittest.TestCase):
 
     def testNewJsonPath(self):
 
-        lds = LDSResult()
+        lds = QueryResult("lds")
         jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
 
         result = lds.buildandParseExpression(jsonObj, "$[*].id")
@@ -254,7 +254,7 @@ class Lds_Test(unittest.TestCase):
 
     def runParseElement(self, jsonObj):
 
-        lds = LDSResult()
+        lds = QueryResult("lds")
         result = lds.parseElement(jsonObj, ["$.id"])
         self.assertEqual(len(result ), 2)
         self.assertEqual("163842", result[0][0] )
@@ -329,8 +329,8 @@ class Lds_Test(unittest.TestCase):
         self.assertEqual(len(result[1] ), 1)
         self.assertEqual(result[1][0], "104523-1")
 
-    def testYaml(self):
-        lds = LDSResult()
+    def testParseCommandDefault(self):
+        lds = QueryResult("lds")
 
         jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
         result = lds.parseCommandDefault(jsonObj)
@@ -356,7 +356,23 @@ class Lds_Test(unittest.TestCase):
         self.assertEqual(r2[2], "GZIP & UUENCODED")
         self.assertEqual(r2[3], "suspended")
 
-        
+    def testNetStorageParseCommandDefault(self):
+        lds = QueryResult("netstorage")
+
+        jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_storage_v1_storage-groups.json".format(os.getcwd()) )
+
+        jsonObj = jsonObj["items"]
+
+        result = lds.parseCommandDefault(jsonObj, True)
+        r1 = result[0]
+
+        self.assertEqual(r1[0], "5-555V556")
+        self.assertEqual(r1[1], "aka_storage")
+        self.assertEqual(r1[2], "akastorage")
+        self.assertEqual(r1[3], 0)
+        self.assertEqual(r1[4], "carndt")
+        self.assertEqual(r1[5], "456789,456790") 
+
 
     def test_runGetCPCodeProducts(self):
        

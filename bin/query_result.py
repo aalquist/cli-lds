@@ -22,8 +22,11 @@ from jsonpath2.path import Path
 
 class QueryResult():
 
+    def __init__(self, name="default"):
+        self.name = name
+
     def getQueryType(self):
-        return "default"
+       return self.name
 
     def buildParseExp(self, paths):
         
@@ -92,16 +95,16 @@ class QueryResult():
         queryjson = os.path.join(dir_path, "queries", self.getQueryType(), "default.json")
         return self.getJsonQueryFile(queryjson)
     
-    def parseCommandDefault(self, json):
-        defaultyamlquery = self.getDefaultJsonQuery()
-        return self.parseCommandGeneric(json, defaultyamlquery)
+    def parseCommandDefault(self, json, RequireAll = True, JoinValues = True):
+        defaultquery = self.getDefaultJsonQuery()
+        return self.parseCommandGeneric(json, defaultquery, RequireAll, JoinValues)
 
-    def parseCommandGeneric(self, json , dictObj):
+    def parseCommandGeneric(self, json , dictObj, RequireAll = True, JoinValues = True):
         queries = list(dictObj.values() )
-        result = self.parseElement(json, queries, True )
+        result = self.parseElement(json, queries, RequireAll, JoinValues )
         return result
 
-    def parseElement(self, json, paths, RequireAll = True):
+    def parseElement(self, json, paths, RequireAll = True, JoinValues = True):
         
         returnList = []
 
@@ -135,9 +138,15 @@ class QueryResult():
                     allMatched = False
 
                 #for each result add to return list
-                
-                for m in match:
-                    matchedArray.append(m)
+                if JoinValues == True and len(match) > 1:
+
+                    match = list( map( lambda m : str(m), match ) )
+                    joinedValue = ",".join(match)
+                    matchedArray.append(joinedValue)
+
+                else: 
+                    for m in match:
+                        matchedArray.append(m)
 
             if RequireAll == False or allMatched == True:
 
@@ -146,10 +155,3 @@ class QueryResult():
 
         return returnList
 
-class LDSResult(QueryResult):
-    def getQueryType(self):
-        return "lds"
-
-class NetStorageResult(QueryResult):
-    def getQueryType(self):
-        return "netstorage"
