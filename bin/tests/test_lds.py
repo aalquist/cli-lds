@@ -50,7 +50,7 @@ class Lds_Test(unittest.TestCase):
 
         edgeRc = "{}/bin/tests/other/.dummy_edgerc".format(os.getcwd())
 
-        args = [ "cpcodelist",
+        args = [ "ldslist",
                 "--section",
                 "default",
                  "--edgerc",
@@ -62,9 +62,10 @@ class Lds_Test(unittest.TestCase):
 
         self._testParseLDSCommandCombo(args)
 
-        file = "{}/bin/queries/lds/default.json".format(os.getcwd()) 
+        templatename="ldslist"
+        file = "{}/bin/queries/{}/default.json".format(os.getcwd(),templatename) 
 
-        args = [ "cpcodelist",
+        args = [ templatename,
                 "--section",
                 "default",
                  "--edgerc",
@@ -76,7 +77,7 @@ class Lds_Test(unittest.TestCase):
 
         self._testParseLDSCommandCombo(args)
 
-        args = [ "cpcodelist",
+        args = [ templatename,
                 "--section",
                 "default",
                  "--edgerc",
@@ -99,7 +100,7 @@ class Lds_Test(unittest.TestCase):
 
         edgeRc = "{}/bin/tests/other/.dummy_edgerc".format(os.getcwd())
 
-        args = [ "cpcodelist",
+        args = [ "ldslist",
                 "--section",
                 "default",
                  "--edgerc",
@@ -136,13 +137,24 @@ class Lds_Test(unittest.TestCase):
     def _testParseLDSCommandCombo(self, args):
 
         saved_stdout = sys.stdout
+        saved_sterr = sys.stdout
+
         finaloutput = None
+
+        
+        
 
         try:
             out = StringIO()
             sys.stdout = out
+
+            outerr = StringIO()
+            sys.stderr = outerr
             
-            self.assertEqual(main(args), 0, "command args {} should return successcode".format(args) )
+            returnVal = main(args)
+            stdErrStr = outerr.getvalue()
+
+            self.assertEqual(returnVal, 0, "command args {} should return successcode. Error msg: {}".format(args,stdErrStr) )
 
             output = list(out.getvalue().split("\n"))
             finaloutput = list(filter(lambda line: line != '', output))
@@ -170,6 +182,7 @@ class Lds_Test(unittest.TestCase):
         finally:
             pass
             sys.stdout = saved_stdout
+            sys.stderr = saved_sterr
 
         return finaloutput
 
@@ -195,7 +208,7 @@ class Lds_Test(unittest.TestCase):
 
     def testNewJsonPath(self):
 
-        lds = QueryResult("lds")
+        lds = QueryResult("ldslist")
         jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
 
         result = lds.buildandParseExpression(jsonObj, "$[*].id")
@@ -330,7 +343,7 @@ class Lds_Test(unittest.TestCase):
         self.assertEqual(result[1][0], "104523-1")
 
     def testParseCommandDefault(self):
-        lds = QueryResult("lds")
+        lds = QueryResult("ldslist")
 
         jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
         result = lds.parseCommandDefault(jsonObj)
@@ -357,7 +370,7 @@ class Lds_Test(unittest.TestCase):
         self.assertEqual(r2[3], "suspended")
 
     def testNetStorageParseCommandDefault(self):
-        lds = QueryResult("netstorage")
+        lds = QueryResult("netstoragelist")
 
         jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_storage_v1_storage-groups.json".format(os.getcwd()) )
 

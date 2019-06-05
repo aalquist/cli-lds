@@ -35,5 +35,21 @@ class NetStorageFetch(Fetch_Akamai_OPENAPI_Response):
             return (code, json)
         else:
             return (code, json)
+
+    def fetchNetStorageUsers(self, *, edgerc, section, account_key, debug=False):
+
+        factory = CredentialFactory()
+        context = factory.load(edgerc, section, account_key)
+        
+        url = self.buildUrl("https://{}/storage/v1/upload-accounts", context)
+        
+        result = context.session.get(url)
+        code, json = self.handleResponse(result, url, debug)
+
+        if code in [200] and "items" in json:
+            json = json["items"]
+            return (code, json)
+        else:
+            return (code, json)
         
     

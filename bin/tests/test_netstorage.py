@@ -38,7 +38,7 @@ class MockResponse:
 class NetStorage_Test(unittest.TestCase):
 
     @patch('requests.Session')
-    def testMainBootStrap(self, mockSessionObj):
+    def testParseMain_fetchNetStorageGroups(self, mockSessionObj):
 
         response = MockResponse()
         response.status_code = 200
@@ -81,7 +81,7 @@ class NetStorage_Test(unittest.TestCase):
                  "--edgerc",
                 edgeRc,
                 "--file",
-                "{}/bin/queries/netstorage/default.json".format(os.getcwd()),
+                "{}/bin/queries/netstoragelist/default.json".format(os.getcwd()),
                 "--debug"
                 
                 ]
@@ -99,6 +99,54 @@ class NetStorage_Test(unittest.TestCase):
 
         (_, _) = self._testMainArgsAndGetResponseStdOutArray(args)
 
+    @patch('requests.Session')
+    def testParseMain_fetchNetStorageUsers(self, mockSessionObj):
+
+        response = MockResponse()
+        response.status_code = 200
+        
+        response.jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_storage_v1_upload-accounts.json".format(os.getcwd()) )
+
+        session = mockSessionObj()
+        session.get.return_value = response
+
+        edgeRc = "{}/bin/tests/other/.dummy_edgerc".format(os.getcwd())
+
+        args = [ "netstorageuser",
+                "--section",
+                "default",
+                 "--edgerc",
+                edgeRc,
+                "--show-json"
+                ]
+
+        (_, stdOut) = self._testMainArgsAndGetResponseStdOutArray(args)
+        jsonStr = stdOut.getvalue()
+        jsonObj = json.loads(jsonStr)
+
+        self.assertEqual(len(jsonObj), 1)
+        self.assertEqual(jsonObj[0]["asperaEnabled"], True)
+
+        args = [ "netstorageuser",
+                "--section",
+                "default",
+                 "--edgerc",
+                edgeRc
+                ]
+
+        (_, stdOut) = self._testMainArgsAndGetResponseStdOutArray(args)
+        jsonStr = stdOut.getvalue()
+        jsonObj = json.loads(jsonStr)
+
+        self.assertEqual(len(jsonObj), 2)
+        self.assertEqual(jsonObj[0], 1234568)
+        self.assertEqual(jsonObj[1], "your@email.com")
+
+        
+
+        pass
+
+       
 
 
     def _testMainArgsAndGetResponseStdOutArray(self, args):

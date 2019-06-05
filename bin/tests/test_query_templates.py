@@ -60,8 +60,8 @@ class Template_Test(unittest.TestCase):
             self.assertGreaterEqual( len(jsondict), 3 )
             self.assertIsInstance(jsondict, list)
 
-            self.assertIn("lds", jsondict)
-            self.assertIn("netstorage", jsondict)
+            self.assertIn("ldslist", jsondict)
+            self.assertIn("netstoragelist", jsondict)
             self.assertIn("alerts", jsondict)
             
 
@@ -72,7 +72,7 @@ class Template_Test(unittest.TestCase):
 
     def testTemplateNames(self):
 
-        args = [ "template", "--type", "lds"]
+        args = [ "template", "--type", "ldslist"]
 
         saved_stdout = sys.stdout
         saved_stderr = sys.stderr
@@ -115,7 +115,7 @@ class Template_Test(unittest.TestCase):
         args = [
                 "template",
                 "--type",
-                "lds",
+                "ldslist",
                 "--get",
                 "active.json"  
             ]
@@ -141,7 +141,7 @@ class Template_Test(unittest.TestCase):
             self.assertGreater(len(finaloutput), 0, "command args {} and its output should be greater than zero".format(args) )
             
             jsondict = json.loads(out.getvalue())
-            expected = self.getJSONFromFile( "{}/bin/queries/lds/active.json".format(os.getcwd()) )
+            expected = self.getJSONFromFile( "{}/bin/queries/ldslist/active.json".format(os.getcwd()) )
             
             self.assertEqual( len(jsondict), len(expected) )
 
@@ -172,8 +172,8 @@ class Template_Test(unittest.TestCase):
             self.assertGreaterEqual( len(jsondict), 3 )
             self.assertIsInstance(jsondict, list)
 
-            self.assertIn("lds", jsondict)
-            self.assertIn("netstorage", jsondict)
+            self.assertIn("ldslist", jsondict)
+            self.assertIn("netstoragelist", jsondict)
             self.assertIn("alerts", jsondict)
             
            

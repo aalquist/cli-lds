@@ -16,6 +16,7 @@ import argparse
 import sys
 import os
 import json
+import copy 
 
 from bin.fetch_lds import LdsFetch
 from bin.fetch_netstorage import NetStorageFetch
@@ -115,13 +116,16 @@ def main(mainArgs=None):
         help="Show available help",
         add_help=False).add_argument( 'args', metavar="", nargs=argparse.REMAINDER)
 
-    create_sub_command(
-        subparsers, "cpcodelist", "List all cpcode based log delivery configurations",
-        optional_arguments=[ 
+
+    arg = [ 
                             {"name": "show-json", "help": "output json"},
                             {"name": "use-stdin", "help": "use stdin for query"},
                             {"name": "file", "help": "the json file for query"},
-                            {"name": "template", "help": "use template name for query"} ],
+                            {"name": "template", "help": "use template name for query"} ]
+
+    create_sub_command(
+        subparsers, "ldslist", "List all cpcode based log delivery configurations",
+        optional_arguments=copy.deepcopy(arg),
         required_arguments=None,
         actions=actions)
 
@@ -133,12 +137,14 @@ def main(mainArgs=None):
         actions=actions)
     
     create_sub_command(
-        subparsers, "netstoragelist", "List netstroage information",
-        optional_arguments=[ 
-                            {"name": "show-json", "help": "output json"},
-                            {"name": "use-stdin", "help": "use stdin for query"},
-                            {"name": "file", "help": "the json file for query"},
-                            {"name": "template", "help": "use template name for query"} ],
+        subparsers, "netstoragelist", "List storage groups",
+        optional_arguments=copy.deepcopy(arg),
+        required_arguments=None,
+        actions=actions)
+
+    create_sub_command(
+        subparsers, "netstorageuser", "List netstorage users",
+        optional_arguments=copy.deepcopy(arg),
         required_arguments=None,
         actions=actions)
     
@@ -217,10 +223,10 @@ def template(args):
 
 
 
-def cpcodelist(args):
+def ldslist(args):
 
     fetch = LdsFetch()
-    queryresult = QueryResult("lds")
+    queryresult = QueryResult("ldslist")
 
     (_ , jsonObj) = fetch.fetchCPCodeProducts(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
 
@@ -229,9 +235,18 @@ def cpcodelist(args):
 def netstoragelist(args):
 
     fetch = NetStorageFetch()
-    queryresult = QueryResult("netstorage")
+    queryresult = QueryResult("netstoragelist")
     
     (_ , jsonObj) = fetch.fetchNetStorageGroups(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
+
+    return handleresponse(args, jsonObj, queryresult)
+
+def netstorageuser(args):
+
+    fetch = NetStorageFetch()
+    queryresult = QueryResult("netstorageuser")
+    
+    (_ , jsonObj) = fetch.fetchNetStorageUsers(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
 
     return handleresponse(args, jsonObj, queryresult)
 

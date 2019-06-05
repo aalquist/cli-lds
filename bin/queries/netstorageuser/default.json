@@ -1,0 +1,4 @@
+{
+    "StorageGroupId" : "$.storageGroupId",
+    "Email" : "$.email"
+}
