@@ -220,30 +220,42 @@ def template(args):
 def cpcodelist(args):
 
     fetch = LdsFetch()
-    lds = QueryResult("lds")
+    queryresult = QueryResult("lds")
 
     (_ , jsonObj) = fetch.fetchCPCodeProducts(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
 
+    return handleresponse(args, jsonObj, queryresult)
+
+def netstoragelist(args):
+
+    fetch = NetStorageFetch()
+    queryresult = QueryResult("netstorage")
+    
+    (_ , jsonObj) = fetch.fetchNetStorageGroups(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
+
+    return handleresponse(args, jsonObj, queryresult)
+
+def handleresponse(args, jsonObj, queryresult):
+
     if not args.show_json:
 
-        if args.use_stdin :
+        if args.use_stdin or args.file is not None :
             
-            inputString = getArgFromSTDIN()
-            parsed = loadInput(lds, inputString, jsonObj)
+            if args.use_stdin:
+                inputString = getArgFromSTDIN()
+            else: 
+                inputString = getArgFromFile(args.file)
 
-        elif args.file is not None :
-            
-            inputString = getArgFromFile(args.file)
-            parsed = loadInput(lds, inputString, jsonObj)
+            parsed = loadInput(queryresult, inputString, jsonObj)
 
         elif args.template is not None :
 
-            templateJson = lds.getQuerybyName(args.template)
-            parsed = lds.parseCommandGeneric(jsonObj, templateJson)
+            templateJson = queryresult.getQuerybyName(args.template)
+            parsed = queryresult.parseCommandGeneric(jsonObj, templateJson)
 
         else:
             
-            parsed = lds.parseCommandDefault(jsonObj)
+            parsed = queryresult.parseCommandDefault(jsonObj)
 
     
         for line in parsed:
@@ -253,52 +265,12 @@ def cpcodelist(args):
         print( json.dumps( jsonObj, indent=1 ) )
 
 
-    return 0
-
-def netstoragelist(args):
-
-    fetch = NetStorageFetch()
-    lds = QueryResult("netstorage")
-    
-    (_ , jsonObj) = fetch.fetchNetStorageGroups(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
-
-    if not args.show_json:
-
-        if args.use_stdin :
-            
-            inputString = getArgFromSTDIN() 
-            parsed = loadInput(lds, inputString, jsonObj) 
-
-        elif args.file is not None :
-            
-            yaml = getArgFromFile(args.file)
-            yamlObj = lds.loadJson(yaml)
-            parsed = lds.parseCommandGeneric(jsonObj , yamlObj)
-
-        elif args.template is not None :
-
-            templateJson = lds.getQuerybyName(args.template)
-            parsed = lds.parseCommandGeneric(jsonObj, templateJson)
-
-        else:
-
-            parsed = lds.parseCommandDefault(jsonObj) 
-
-        for line in parsed: 
-            print( json.dumps(line) ) 
+    return 0   
 
 
-
-    else: 
-        print( json.dumps( jsonObj, indent=1 ) )
-
-
-    return 0
-
-
-def loadInput(lds, inputString, jsonObj):
-    templateJson = lds.loadJson(inputString)
-    parsed = lds.parseCommandGeneric(jsonObj , templateJson)
+def loadInput(queryresult, inputString, jsonObj):
+    templateJson = queryresult.loadJson(inputString)
+    parsed = queryresult.parseCommandGeneric(jsonObj , templateJson)
     return parsed
 
 def argFromInput(arg):
