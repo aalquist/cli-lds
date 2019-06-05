@@ -127,7 +127,8 @@ def main(mainArgs=None):
 
     create_sub_command(
         subparsers, "template", "prints the default yaml query template",
-        optional_arguments=[  {"name": "get", "help": "get template by name"}],
+        optional_arguments=[    {"name": "get", "help": "get template by name"}, 
+                                {"name": "type", "help": "the template type"}],
         required_arguments=None,
         actions=actions)
     
@@ -184,17 +185,35 @@ def main(mainArgs=None):
 
 
 def template(args):
-    lds = QueryResult("lds")
 
-    if args.get is None:
-        obj = lds.listQuery()
+    return_value = 0    
+
+    if args.type is None:
+        print( "template type is required. here is a list of options", file=sys.stderr )
+        queryType = QueryResult(args.type)
+        obj = queryType.listQueryTypes()
+
     else:
 
-        obj = lds.getQuerybyName(args.get)
+        queryType = QueryResult(args.type)
+        obj = queryType.listQueryTypes()
+
+        if args.type in obj:
+
+            queryType = QueryResult(args.type)
+
+            if args.get is None:
+                obj = queryType.listQuery()
+            else:
+
+                obj = queryType.getQuerybyName(args.get)
+        else:
+            print( "template type: {} not found. ".format(args.type), file=sys.stderr )
+            return_value = 1
         
 
     print( json.dumps(obj,indent=1) )
-    return 0
+    return return_value
 
 
 

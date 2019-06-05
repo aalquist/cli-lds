@@ -69,6 +69,22 @@ class QueryResult():
         
         return obj
 
+    def listQueryTypes(self):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+        queriesdir = os.path.join(dir_path, "queries" )
+        queriesdir = os.listdir(queriesdir)
+
+        returnlist = []
+
+        for f in queriesdir:
+            fullname = os.path.join(dir_path, "queries", f)
+
+            if os.path.isdir(fullname):
+                returnlist.append(f)
+            
+
+        return returnlist
+
     def listQuery(self):
         dir_path = os.path.dirname(os.path.realpath(__file__))
         ldsdir = os.path.join(dir_path, "queries", self.getQueryType() )

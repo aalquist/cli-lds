@@ -26,29 +26,65 @@ from bin.lds_parse_commands import main
 from unittest.mock import patch
 from akamai.edgegrid import EdgeGridAuth, EdgeRc
 
-class MockResponse:
-
-    def __init__(self):
-        self.status_code = None
-        self.jsonObj = None
-
-    def json(self):
-        return self.jsonObj
 
 
-class NetStorage_Test(unittest.TestCase):
+class Template_Test(unittest.TestCase):
 
     
-    def testTemplateNames(self):
+    def testTemplateTypes(self):
 
         args = [ "template"]
 
         saved_stdout = sys.stdout
+        saved_stderr = sys.stderr
+
         finaloutput = None
 
         try:
             out = StringIO()
             sys.stdout = out
+            
+            outerr = StringIO()
+            sys.stderr = outerr
+
+            self.assertEqual(main(args), 0, "command args {} should return successcode".format(args) )
+
+            output = list(out.getvalue().split("\n"))
+            finaloutput = list(filter(lambda line: line != '', output))
+
+           
+            self.assertGreater(len(finaloutput), 0, "command args {} and its output should be greater than zero".format(args) )
+            
+            jsonStr=out.getvalue()
+            jsondict = json.loads(jsonStr)  
+            self.assertGreaterEqual( len(jsondict), 3 )
+            self.assertIsInstance(jsondict, list)
+
+            self.assertIn("lds", jsondict)
+            self.assertIn("netstorage", jsondict)
+            self.assertIn("alerts", jsondict)
+            
+
+        finally:
+            pass
+            sys.stdout = saved_stdout
+            sys.stderr = saved_stderr
+
+    def testTemplateNames(self):
+
+        args = [ "template", "--type", "lds"]
+
+        saved_stdout = sys.stdout
+        saved_stderr = sys.stderr
+
+        finaloutput = None
+
+        try:
+            out = StringIO()
+            sys.stdout = out
+
+            outerr = StringIO()
+            sys.stderr = outerr
             
             self.assertEqual(main(args), 0, "command args {} should return successcode".format(args) )
 
@@ -58,29 +94,44 @@ class NetStorage_Test(unittest.TestCase):
            
             self.assertGreater(len(finaloutput), 0, "command args {} and its output should be greater than zero".format(args) )
             
-            jsondict = json.loads(out.getvalue())  
+            jsonStr=out.getvalue()
+            jsondict = json.loads(jsonStr)  
             self.assertGreaterEqual( len(jsondict), 3 )
+            self.assertIsInstance(jsondict, list)
+            
+            self.assertIn("default.json", jsondict)
+            self.assertIn("active-gpg.json", jsondict)
+            self.assertIn("active.json", jsondict)
+            
 
         finally:
             pass
             sys.stdout = saved_stdout
+            sys.stderr = saved_stderr
 
     def testMainBootStrap(self):
 
        
         args = [
                 "template",
+                "--type",
+                "lds",
                 "--get",
                 "active.json"  
             ]
 
         saved_stdout = sys.stdout
+        saved_stderr = sys.stderr
+
         finaloutput = None
 
         try:
             out = StringIO()
             sys.stdout = out
             
+            outerr = StringIO()
+            sys.stderr = outerr
+
             self.assertEqual(main(args), 0, "command args {} should return successcode".format(args) )
 
             output = list(out.getvalue().split("\n"))
@@ -97,8 +148,33 @@ class NetStorage_Test(unittest.TestCase):
             for k in jsondict:
                 self.assertEqual(jsondict[k], expected[k])
 
+            args = [
+                "template",
+                "--type",
+                "wrong_name",
+                "--get",
+                "default.json"  
+            ]
+
+            out = StringIO()
+            sys.stdout = out
+
+            outerr = StringIO()
+            sys.stderr = outerr
+
+            self.assertEqual(main(args), 1, "command args {} should NOT return successcode".format(args) )
             
-            sys.stdout = saved_stdout
+            output = outerr.getvalue()
+            self.assertAlmostEqual("template type: wrong_name not found. \n", output)
+            
+            jsonStr=out.getvalue()
+            jsondict = json.loads(jsonStr)  
+            self.assertGreaterEqual( len(jsondict), 3 )
+            self.assertIsInstance(jsondict, list)
+
+            self.assertIn("lds", jsondict)
+            self.assertIn("netstorage", jsondict)
+            self.assertIn("alerts", jsondict)
             
            
             
@@ -106,6 +182,7 @@ class NetStorage_Test(unittest.TestCase):
         finally:
             pass
             sys.stdout = saved_stdout
+            sys.stderr = saved_stderr
 
         
     
