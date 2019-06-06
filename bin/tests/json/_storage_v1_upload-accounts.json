@@ -3,6 +3,8 @@
         {
             "uploadAccountId": "value",
             "storageGroupId": 1234568,
+            "storageGroupName" : "some_netstorage_groupname_missing_in_doc",
+            "uploadAccountStatus" : "some_status_missing_in_doc",
             "status": "ACTIVE",
             "isEditable": true,
             "ftpEnabled": true,

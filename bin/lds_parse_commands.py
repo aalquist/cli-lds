@@ -261,7 +261,8 @@ def handleresponse(args, jsonObj, queryresult):
             else: 
                 inputString = getArgFromFile(args.file)
 
-            parsed = loadInput(queryresult, inputString, jsonObj)
+            templateJson = queryresult.loadJson(inputString)
+            parsed = queryresult.parseCommandGeneric(jsonObj , templateJson)
 
         elif args.template is not None :
 
@@ -282,11 +283,6 @@ def handleresponse(args, jsonObj, queryresult):
 
     return 0   
 
-
-def loadInput(queryresult, inputString, jsonObj):
-    templateJson = queryresult.loadJson(inputString)
-    parsed = queryresult.parseCommandGeneric(jsonObj , templateJson)
-    return parsed
 
 def argFromInput(arg):
 

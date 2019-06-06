@@ -115,9 +115,14 @@ class QueryResult():
         defaultquery = self.getDefaultJsonQuery()
         return self.parseCommandGeneric(json, defaultquery, RequireAll, JoinValues)
 
-    def parseCommandGeneric(self, json , dictObj, RequireAll = True, JoinValues = True):
+    def parseCommandGeneric(self, json , dictObj, RequireAll = True, JoinValues = True, ReturnHeader=True):
         queries = list(dictObj.values() )
         result = self.parseElement(json, queries, RequireAll, JoinValues )
+
+        if ReturnHeader:
+            header = list(dictObj.keys())
+            result.insert(0,header)
+
         return result
 
     def parseElement(self, json, paths, RequireAll = True, JoinValues = True):

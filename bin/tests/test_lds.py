@@ -161,7 +161,14 @@ class Lds_Test(unittest.TestCase):
 
            
             self.assertGreater(len(finaloutput), 0, "command args {} and its output should be greater than zero".format(args) )
+            
             line = finaloutput[0]
+            self.assertIn("CPCODE", line)
+            self.assertIn("Aggregation_Frequency", line)
+            self.assertIn("Status", line)
+            self.assertIn("Encoding", line)
+
+            line = finaloutput[1]
             
             sys.stdout = saved_stdout
             
@@ -170,13 +177,13 @@ class Lds_Test(unittest.TestCase):
             self.assertIn("active", line)
             self.assertIn("GZIP", line)
             
-            line = finaloutput[1]
+            line = finaloutput[2]
             self.assertIn("104523-1", line)
             self.assertIn("Every 1 hour", line)
             self.assertIn("suspended", line)
             self.assertIn("GZIP & UUENCODED", line)
 
-            self.assertEqual(2, len(finaloutput))
+            self.assertEqual(3, len(finaloutput))
             
 
         finally:
@@ -348,10 +355,16 @@ class Lds_Test(unittest.TestCase):
         jsonObj = self.getJSONFromFile( "{}/bin/tests/json/_lds-api_v3_log-sources_cpcode-products.json".format(os.getcwd()) )
         result = lds.parseCommandDefault(jsonObj)
         
-        self.assertEqual(len(result ), 2)
+        self.assertEqual(len(result ), 3)
         self.assertEqual(len(result[0] ), 4)
 
-        r1 = result[0]
+        r0 = result[0]
+        self.assertEqual(r0[0], "CPCODE")
+        self.assertEqual(r0[1], "Aggregation_Frequency")
+        self.assertEqual(r0[2], "Status") 
+        self.assertEqual(r0[3], "Encoding")
+
+        r1 = result[1]
         r1.sort()
 
         self.assertEqual(r1[0], "200957-1")
@@ -361,7 +374,7 @@ class Lds_Test(unittest.TestCase):
 
         self.assertEqual(len(result[1] ), 4)
 
-        r2 = result[1]
+        r2 = result[2]
         r2.sort()
 
         self.assertEqual(r2[0], "104523-1")
@@ -377,7 +390,7 @@ class Lds_Test(unittest.TestCase):
         jsonObj = jsonObj["items"]
 
         result = lds.parseCommandDefault(jsonObj, True)
-        r1 = result[0]
+        r1 = result[1]
 
         self.assertEqual(r1[0], "5-555V556")
         self.assertEqual(r1[1], "aka_storage")

@@ -134,13 +134,17 @@ class NetStorage_Test(unittest.TestCase):
                 edgeRc
                 ]
 
-        (_, stdOut) = self._testMainArgsAndGetResponseStdOutArray(args)
-        jsonStr = stdOut.getvalue()
-        jsonObj = json.loads(jsonStr)
+        (outputArray, _) = self._testMainArgsAndGetResponseStdOutArray(args)
+        
+        jsonObj = json.loads(outputArray[0])
+        self.assertEqual(len(jsonObj), 10)
+        self.assertEqual(jsonObj[0], "StorageGroupId")
+        self.assertEqual(jsonObj[1], "storageGroupName")
 
-        self.assertEqual(len(jsonObj), 2)
+        jsonObj = json.loads(outputArray[1])
+        self.assertEqual(len(jsonObj), 10)
         self.assertEqual(jsonObj[0], 1234568)
-        self.assertEqual(jsonObj[1], "your@email.com")
+        self.assertEqual(jsonObj[1], "some_netstorage_groupname_missing_in_doc")
 
         
 
