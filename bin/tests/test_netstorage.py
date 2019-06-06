@@ -17,6 +17,7 @@ import os
 import json
 import sys
 from io import StringIO
+from collections import OrderedDict
 
 from bin.query_result import QueryResult
 from bin.fetch_lds import LdsFetch
@@ -136,12 +137,16 @@ class NetStorage_Test(unittest.TestCase):
 
         (outputArray, _) = self._testMainArgsAndGetResponseStdOutArray(args)
         
-        jsonObj = json.loads(outputArray[0])
+        jsonObj = json.loads(outputArray[0],object_pairs_hook=OrderedDict)
+        #jsonObj.sort()
+
         self.assertEqual(len(jsonObj), 10)
         self.assertEqual(jsonObj[0], "StorageGroupId")
         self.assertEqual(jsonObj[1], "storageGroupName")
 
-        jsonObj = json.loads(outputArray[1])
+        jsonObj = json.loads(outputArray[1],object_pairs_hook=OrderedDict)
+        #jsonObj.sort()
+
         self.assertEqual(len(jsonObj), 10)
         self.assertEqual(jsonObj[0], 1234568)
         self.assertEqual(jsonObj[1], "some_netstorage_groupname_missing_in_doc")
