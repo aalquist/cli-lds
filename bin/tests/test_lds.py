@@ -393,12 +393,14 @@ class Lds_Test(unittest.TestCase):
         
         r1 = result[0]
 
-        self.assertEqual(r1[0], "5-555V556")
-        self.assertEqual(r1[1], "aka_storage")
-        self.assertEqual(r1[2], "akastorage")
-        self.assertEqual(r1[3], 0)
-        self.assertEqual(r1[4], "carndt")
-        self.assertEqual(r1[5], "456789,456790") 
+        dataset = ["5-555V556", "aka_storage", "akastorage", 0, "carndt", "456789,456790"]
+        self.assertIn(r1[0],dataset)
+        self.assertIn(r1[1],dataset)
+        self.assertIn(r1[2],dataset)
+        self.assertIn(r1[3],dataset)
+        self.assertIn(r1[4],dataset)
+        self.assertIn(r1[5],dataset)
+        
 
 
     def test_runGetCPCodeProducts(self):
