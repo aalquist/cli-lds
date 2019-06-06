@@ -141,15 +141,19 @@ class NetStorage_Test(unittest.TestCase):
         #jsonObj.sort()
 
         self.assertEqual(len(jsonObj), 10)
-        self.assertEqual(jsonObj[0], "StorageGroupId")
-        self.assertEqual(jsonObj[1], "storageGroupName")
+        
+        dataset = ["StorageGroupId", "storageGroupName"]
+        self.assertIn(jsonObj[0],dataset)
+        self.assertIn(jsonObj[1],dataset)
 
         jsonObj = json.loads(outputArray[1],object_pairs_hook=OrderedDict)
         #jsonObj.sort()
 
-        self.assertEqual(len(jsonObj), 10)
-        self.assertEqual(jsonObj[0], 1234568)
-        self.assertEqual(jsonObj[1], "some_netstorage_groupname_missing_in_doc")
+        dataset = [1234568, "some_netstorage_groupname_missing_in_doc", "your@email.com"]
+        self.assertIn(jsonObj[0],dataset)
+        self.assertIn(jsonObj[1],dataset)
+        self.assertIn(jsonObj[2],dataset)
+
 
         
 
