@@ -3,14 +3,14 @@ echo "building and testing code in python 3 image"
 
 commitId=$(git log -1 --pretty=%H)
 echo "$commitId for docker tag"
-NAME=akamai-query
+PYTHON_Version="3.7"
+NAME="akamai-query"
 CMD_NAME="akamai query"
 
-DOCKERNAME="aaalquis/$NAME"
+DOCKERNAME="aaalquis/$NAME-py$PYTHON_Version"
 echo $DOCKERNAME
-docker build -t $DOCKERNAME:$commitId .
+docker build -f python3.7.Dockerfile -t $DOCKERNAME:$commitId .
 
-docker build --tag $NAME . 
 #docker run -v $(pwd):/cli-test --rm $NAME  python3 runtests.py
 #echo "docker run -v $(pwd):/cli-test --rm $NAME  /bin/bash"
 

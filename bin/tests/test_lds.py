@@ -358,29 +358,30 @@ class Lds_Test(unittest.TestCase):
         self.assertEqual(len(result ), 3)
         self.assertEqual(len(result[0] ), 4)
 
-        r0 = result[0]
-        self.assertEqual(r0[0], "CPCODE")
-        self.assertEqual(r0[1], "Aggregation_Frequency")
-        self.assertEqual(r0[2], "Status") 
-        self.assertEqual(r0[3], "Encoding")
+        r = result[0]
+        self.assertEqual(len(r ), 4)
+        dataset = ["CPCODE", "Aggregation_Frequency", "Status", "Encoding"]
+        self.assertIn(r[0],dataset)
+        self.assertIn(r[1],dataset)
+        self.assertIn(r[2],dataset)
+        self.assertIn(r[3],dataset)
+        
+        r = result[1]
+        self.assertEqual(len(r ), 4)
+        dataset = ["200957-1", "Every 24 hours", "GZIP", "active"]
+        self.assertIn(r[0],dataset)
+        self.assertIn(r[1],dataset)
+        self.assertIn(r[2],dataset)
+        self.assertIn(r[3],dataset)
 
-        r1 = result[1]
-        r1.sort()
-
-        self.assertEqual(r1[0], "200957-1")
-        self.assertEqual(r1[1], "Every 24 hours")
-        self.assertEqual(r1[2], "GZIP") 
-        self.assertEqual(r1[3], "active")
-
-        self.assertEqual(len(result[1] ), 4)
-
-        r2 = result[2]
-        r2.sort()
-
-        self.assertEqual(r2[0], "104523-1")
-        self.assertEqual(r2[1], "Every 1 hour")
-        self.assertEqual(r2[2], "GZIP & UUENCODED")
-        self.assertEqual(r2[3], "suspended")
+        r = result[2] 
+        self.assertEqual(len(r ), 4)
+        dataset = ["104523-1", "Every 1 hour", "GZIP & UUENCODED", "suspended"]
+        self.assertIn(r[0],dataset)
+        self.assertIn(r[1],dataset)
+        self.assertIn(r[2],dataset)
+        self.assertIn(r[3],dataset)
+        
 
     def testNetStorageParseCommandDefault(self):
         lds = QueryResult("netstoragelist")
