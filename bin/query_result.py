@@ -49,6 +49,7 @@ class QueryResult():
         return data
     
     def loadJson(self, jsonStr):
+        #need OrderedDict for some python 3.5 impl 
         data = json.loads(jsonStr, object_pairs_hook=OrderedDict)
         return data
     
