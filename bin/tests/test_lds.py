@@ -389,8 +389,9 @@ class Lds_Test(unittest.TestCase):
 
         jsonObj = jsonObj["items"]
 
-        result = lds.parseCommandDefault(jsonObj, True)
-        r1 = result[1]
+        result = lds.parseCommandDefault(jsonObj, True, True, False)
+        
+        r1 = result[0]
 
         self.assertEqual(r1[0], "5-555V556")
         self.assertEqual(r1[1], "aka_storage")

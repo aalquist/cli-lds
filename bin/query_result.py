@@ -111,23 +111,29 @@ class QueryResult():
         queryjson = os.path.join(dir_path, "queries", self.getQueryType(), "default.json")
         return self.getJsonQueryFile(queryjson)
     
-    def parseCommandDefault(self, json, RequireAll = True, JoinValues = True):
+    def parseCommandDefault(self, json, RequireAll = True, JoinValues = True, ReturnHeader=True):
         defaultquery = self.getDefaultJsonQuery()
-        return self.parseCommandGeneric(json, defaultquery, RequireAll, JoinValues)
+        return self.parseCommandGeneric(json, defaultquery, RequireAll, JoinValues, ReturnHeader)
 
     def parseCommandGeneric(self, json , dictObj, RequireAll = True, JoinValues = True, ReturnHeader=True):
         queries = list(dictObj.values() )
-        result = self.parseElement(json, queries, RequireAll, JoinValues )
+
+        returnList = []
 
         if ReturnHeader:
             header = list(dictObj.keys())
-            result.insert(0,header)
+            returnList.append(header)
+            
+        result = self.parseElement(json, queries, RequireAll, JoinValues, returnList )
+
+        
 
         return result
 
-    def parseElement(self, json, paths, RequireAll = True, JoinValues = True):
+    def parseElement(self, json, paths, RequireAll = True, JoinValues = True, returnList = None):
         
-        returnList = []
+        if returnList is None:
+            returnList = []
 
         jsonExpressions = []
         
