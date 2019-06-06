@@ -15,6 +15,7 @@
 import sys
 import os
 import json
+from collections import OrderedDict
 
 #seems to be the most reliable jsonpath parser https://github.com/pacifica/python-jsonpath2 
 from jsonpath2.path import Path
@@ -48,7 +49,7 @@ class QueryResult():
         return data
     
     def loadJson(self, jsonStr):
-        data = json.loads(jsonStr)
+        data = json.loads(jsonStr, object_pairs_hook=OrderedDict)
         return data
     
     def getJsonQueryFile(self, queryfile):
