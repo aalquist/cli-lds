@@ -100,7 +100,7 @@ def main(mainArgs=None):
         prog += " [command]"
 
     parser = MyArgumentParser(
-            description='Akamai LDS CLI',
+            description='Akamai Query CLI',
             add_help=False,
             prog=prog
     )

@@ -4,9 +4,9 @@
     },
     "commands": [
       {
-        "name": "lds",
+        "name": "query",
         "version": "0.0.1",
-        "description": "Log Delivery Service"
+        "description": "Generic querying CLI for multiple end points"
       }
     ]
   }

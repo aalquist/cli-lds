@@ -23,7 +23,7 @@
             "cpCode": "200957 - MOCK CP CODE DESCR ",
             "products": [
                 "HTTP Content Delivery"
-            ]
+            ] 
         },
         "aggregationDetails": {
             "type": "byLogArrival",

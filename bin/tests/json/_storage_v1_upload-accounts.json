@@ -9,7 +9,7 @@
             "isEditable": true,
             "ftpEnabled": true,
             "sshEnabled": true,
-            "rsyncEnabled": true,
+            "rsyncEnabled": true, 
             "asperaEnabled": true,
             "hasFileManagerAccess": true,
             "hasHttpApiAccess": true,
