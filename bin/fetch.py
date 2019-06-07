@@ -32,8 +32,8 @@ class Fetch_Akamai_OPENAPI_Response():
 
         return url
 
-    def buildUrl(self, url, context):
-        url = url.format(context.base_url)
+    def buildUrl(self, url, context, *argv):
+        url = url.format(context.base_url, *argv)
         
         if context.account_key != '' :
             url = self.makeSwitchUrl(url, context.account_key)

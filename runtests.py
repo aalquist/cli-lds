@@ -5,7 +5,7 @@ import sys
 
 def runTests(filePattern=None):
     if filePattern is not None:
-        tests = unittest.TestLoader().discover('bin/tests/', pattern="test_lds.py")
+        tests = unittest.TestLoader().discover('bin/tests/', pattern=filePattern)
     else:
         tests = unittest.TestLoader().discover('bin/tests/')
     result = unittest.TextTestRunner(verbosity=2).run(tests)
