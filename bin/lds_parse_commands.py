@@ -20,7 +20,10 @@ import copy
 
 from bin.fetch_lds import LdsFetch
 from bin.fetch_netstorage import NetStorageFetch
+from bin.fetch_cpcodes import CPCODEFetch
+
 from bin.query_result import QueryResult
+
 
 import json
 
@@ -148,6 +151,11 @@ def main(mainArgs=None):
         required_arguments=None,
         actions=actions)
     
+    create_sub_command(
+        subparsers, "groupcpcodelist", "CPCODES assigned to groups",
+        optional_arguments=copy.deepcopy(arg),
+        required_arguments=None,
+        actions=actions)
 
     args = None
     
@@ -247,6 +255,15 @@ def netstorageuser(args):
     queryresult = QueryResult("netstorageuser")
     
     (_ , jsonObj) = fetch.fetchNetStorageUsers(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
+
+    return handleresponse(args, jsonObj, queryresult)
+
+def groupcpcodelist(args):
+
+    fetch = CPCODEFetch()
+    queryresult = QueryResult("groupcpcodelist")
+
+    (_ , jsonObj) = fetch.fetchGroupCPCODES(edgerc = args.edgerc, section=args.section, account_key=args.account_key, debug=args.debug)  
 
     return handleresponse(args, jsonObj, queryresult)
 

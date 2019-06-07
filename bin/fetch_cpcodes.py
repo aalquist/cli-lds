@@ -25,7 +25,7 @@ from bin.fetch import Fetch_Akamai_OPENAPI_Response
 
 class CPCODEFetch(Fetch_Akamai_OPENAPI_Response):
 
-
+ 
     def fetchGroupCPCODES(self, *, edgerc, section, account_key, debug=False):
 
         factory = CredentialFactory()

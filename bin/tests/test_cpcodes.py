@@ -24,12 +24,16 @@ from bin.fetch_cpcodes import CPCODEFetch
 from unittest.mock import patch
 from akamai.edgegrid import EdgeGridAuth, EdgeRc
 
+from bin.lds_parse_commands import main 
+
 class MockResponse:
 
     def __init__(self):
         self.status_code = None
-        self.jsonObj = []
+        self.reset()
         
+    def reset(self):
+        self.jsonObj = []
 
     def appendResponse(self, obj):
         self.jsonObj.insert(0,obj)
@@ -46,16 +50,23 @@ class MockResponse:
 
 class CPCODE_Test(unittest.TestCase):
 
-    @patch('requests.Session')
-    def testFetchGroupCPCODES(self, mockSessionObj):
+    def loadTests(self, response):
 
-        response = MockResponse()
         response.status_code = 200
+        response.reset()
         response.appendResponse( self.getJSONFromFile( "{}/bin/tests/json/_papi_v1_groups.json".format(os.getcwd()) ) )
         response.appendResponse( self.getJSONFromFile( "{}/bin/tests/json/_papi_v1_cpcodes__ctr_1-1TJZFW_grp_41445.json".format(os.getcwd()) ) )
         response.appendResponse( self.getJSONFromFile( "{}/bin/tests/json/_papi_v1_cpcodes__ctr_1-1TJZFW_grp_41444.json".format(os.getcwd()) ) )
         response.appendResponse( self.getJSONFromFile( "{}/bin/tests/json/_papi_v1_cpcodes__ctr_1-1TJZFW_grp_41443.json".format(os.getcwd()) ) )
         
+
+
+    @patch('requests.Session')
+    def testFetchGroupCPCODES(self, mockSessionObj):
+
+        response = MockResponse()
+        self.loadTests(response)
+
         session = mockSessionObj()
         session.get.return_value = response
 
@@ -76,7 +87,61 @@ class CPCODE_Test(unittest.TestCase):
         self.assertEqual(json[2]["cpcodes"][0]["cpcodeId"], "cpc_33190")
         self.assertEqual(json[2]["cpcodes"][0]["cpcodeName"], "SME WAA")
 
+        self.loadTests(response)
+
+        args = [ "groupcpcodelist",
+                "--section",
+                "default",
+                 "--edgerc",
+                edgeRc
+                
+                ]
+
+        (_, out) = self._testMainArgsAndGetResponseStdOutArray(args)
+
+        self.loadTests(response)
+
+        args = [ "groupcpcodelist",
+                "--section",
+                "default",
+                 "--edgerc",
+                edgeRc,
+                "--show-json"
+                ]
+
+        (_, _) = self._testMainArgsAndGetResponseStdOutArray(args)
+        json = out.getvalue()
         
+
+       
+        pass
+
+
+    def _testMainArgsAndGetResponseStdOutArray(self, args):
+
+        saved_stdout = sys.stdout
+        finaloutput = None
+
+        try:
+            out = StringIO()
+            sys.stdout = out
+            
+            self.assertEqual(main(args), 0, "command args {} should return successcode, but returned:\n+++++\n{}\n+++++\n".format(args,out.getvalue()) )
+
+            output = list(out.getvalue().split("\n"))
+            finaloutput = list(filter(lambda line: line != '', output))
+
+           
+            self.assertGreater(len(finaloutput), 0, "command args {} and its output should be greater than zero".format(args) )
+            
+            sys.stdout = saved_stdout
+
+
+        finally:
+            pass
+            sys.stdout = saved_stdout
+
+        return (output, out)   
     
     
     def getJSONFromFile(self, jsonPath):
